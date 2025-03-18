@@ -16,7 +16,7 @@ public class PlayerRunState : PlayerBaseState
         m_stateMachine.MovementSpeed += k_runSpeedAddition;
 
         m_stateMachine.PlayerAnimator.CrossFadeMoveAnimation();
-        EventBus.Instance.Subscribe<InputReaderEvents.JumpEvent>(SwitchToJumpState);
+        m_stateMachine.GameInput.OnJumpPerformed += SwitchToJumpState;
     }
 
     public override void Tick()
@@ -44,10 +44,10 @@ public class PlayerRunState : PlayerBaseState
     public override void Exit()
     {
         m_stateMachine.MovementSpeed -= k_runSpeedAddition;
-        EventBus.Instance.Unsubscribe<InputReaderEvents.JumpEvent>(SwitchToJumpState);
+        m_stateMachine.GameInput.OnJumpPerformed -= SwitchToJumpState;
     }
 
-    private void SwitchToJumpState(InputReaderEvents.JumpEvent jump)
+    private void SwitchToJumpState()
     {
         m_stateMachine.SwitchState(new PlayerJumpState(m_stateMachine));
     }

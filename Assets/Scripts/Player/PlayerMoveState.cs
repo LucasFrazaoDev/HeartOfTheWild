@@ -36,36 +36,36 @@ public class PlayerMoveState : PlayerBaseState
 
     private void SubscribeInputEvents()
     {
-        EventBus.Instance.Subscribe<InputReaderEvents.JumpEvent>(SwitchToJumpState);
-        EventBus.Instance.Subscribe<InputReaderEvents.AttackEvent>(SwitchToAttackState);
-        EventBus.Instance.Subscribe<InputReaderEvents.ShieldDefenseEvent>(SwitchToMoveWithShieldState);
-        EventBus.Instance.Subscribe<InputReaderEvents.RunEvent>(SwitchToRunState);
+        m_stateMachine.GameInput.OnJumpPerformed += SwitchToJumpState;
+        m_stateMachine.GameInput.OnRunPerformed += SwitchToRunState;
+        m_stateMachine.GameInput.OnAttackPerformed += SwitchToAttackState;
+        m_stateMachine.GameInput.OnShieldDefensePerformed += SwitchToMoveWithShieldState;
     }
 
     private void UnsubscribeInputEvents()
     {
-        EventBus.Instance.Unsubscribe<InputReaderEvents.JumpEvent>(SwitchToJumpState);
-        EventBus.Instance.Unsubscribe<InputReaderEvents.AttackEvent>(SwitchToAttackState);
-        EventBus.Instance.Unsubscribe<InputReaderEvents.ShieldDefenseEvent>(SwitchToMoveWithShieldState);
-        EventBus.Instance.Unsubscribe<InputReaderEvents.RunEvent>(SwitchToRunState);
+        m_stateMachine.GameInput.OnJumpPerformed -= SwitchToJumpState;
+        m_stateMachine.GameInput.OnRunPerformed -= SwitchToRunState;
+        m_stateMachine.GameInput.OnAttackPerformed -= SwitchToAttackState;
+        m_stateMachine.GameInput.OnShieldDefensePerformed -= SwitchToMoveWithShieldState;
     }
 
-    private void SwitchToJumpState(InputReaderEvents.JumpEvent jump)
+    private void SwitchToJumpState()
     {
         m_stateMachine.SwitchState(new PlayerJumpState(m_stateMachine));
     }
 
-    private void SwitchToRunState(InputReaderEvents.RunEvent run)
+    private void SwitchToRunState()
     {
         m_stateMachine.SwitchState(new PlayerRunState(m_stateMachine));
     }
 
-    private void SwitchToAttackState(InputReaderEvents.AttackEvent attack)
+    private void SwitchToAttackState()
     {
         m_stateMachine.SwitchState(new PlayerAttackState(m_stateMachine));
     }
 
-    private void SwitchToMoveWithShieldState(InputReaderEvents.ShieldDefenseEvent shieldUp)
+    private void SwitchToMoveWithShieldState()
     {
         m_stateMachine.SwitchState(new PlayerDefendingState(m_stateMachine));
     }

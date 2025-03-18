@@ -17,7 +17,7 @@ public class PlayerAttackState : PlayerBaseState
         m_comboTimer = 0f;
         m_isAttacking = false;
         PerformAttack();
-        EventBus.Instance.Subscribe<InputReaderEvents.AttackEvent>(OnAttackPressed);
+        m_stateMachine.GameInput.OnAttackPerformed += OnAttackPressed;
     }
 
     public override void Tick()
@@ -33,10 +33,10 @@ public class PlayerAttackState : PlayerBaseState
 
     public override void Exit()
     {
-        EventBus.Instance.Subscribe<InputReaderEvents.AttackEvent>(OnAttackPressed);
+        m_stateMachine.GameInput.OnAttackPerformed -= OnAttackPressed;
     }
 
-    private void OnAttackPressed(InputReaderEvents.AttackEvent attackEvent)
+    private void OnAttackPressed()
     {
         if (!m_isAttacking)
         {
@@ -46,7 +46,7 @@ public class PlayerAttackState : PlayerBaseState
             if (m_currentComboStep < attackCombo.Length - 1)
             {
                 m_currentComboStep++;
-                PerformAttack().Forget(); // Inicia o próximo ataque
+                PerformAttack();
             }
         }
     }

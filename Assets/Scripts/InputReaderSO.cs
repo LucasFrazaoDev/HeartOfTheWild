@@ -1,9 +1,15 @@
+using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
 [CreateAssetMenu(fileName = "InputReader", menuName = "Scriptable Objects/InputReader")]
 public class InputReaderSO : ScriptableObject, PlayerInputController.IPlayerActions
 {
+    public event Action OnJumpPerformed;
+    public event Action OnRunPerformed;
+    public event Action OnAttackPerformed;
+    public event Action OnShieldDefensePerformed;
+
     private PlayerInputController m_playerInput;
 
     // Inicialização
@@ -50,32 +56,24 @@ public class InputReaderSO : ScriptableObject, PlayerInputController.IPlayerActi
 
     public void OnJump(InputAction.CallbackContext context)
     {
-        // Publica o evento de pulo
-        EventBus.Instance.Publish(new InputReaderEvents.JumpEvent());
+        OnJumpPerformed?.Invoke();
     }
 
     public void OnRun(InputAction.CallbackContext context)
     {
-        // Publica o evento de corrida
-        EventBus.Instance.Publish(new InputReaderEvents.RunEvent());
+        OnRunPerformed?.Invoke();
     }
 
     public void OnAttack(InputAction.CallbackContext context)
     {
         if (context.performed)
-        {
-            // Publica o evento de ataque
-            EventBus.Instance.Publish(new InputReaderEvents.AttackEvent());
-        }
+            OnAttackPerformed?.Invoke();
     }
 
     public void OnShieldDefense(InputAction.CallbackContext context)
     {
         if (context.performed)
-        {
-            // Publica o evento de defesa com escudo
-            EventBus.Instance.Publish(new InputReaderEvents.ShieldDefenseEvent());
-        }
+            OnShieldDefensePerformed?.Invoke();
     }
 
     public void OnMove(InputAction.CallbackContext context)

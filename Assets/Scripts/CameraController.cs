@@ -12,7 +12,7 @@ public class ThirdPersonCameraController : MonoBehaviour
     [SerializeField] private float m_topClamp = 70.0f;
     [Tooltip("How far in degrees can move the camera down")]
     [SerializeField] private float m_bottomClamp = -30.0f;
-    [Tooltip("Additional degress to override the camera. Useful for fine tuning camera position when locked")]
+    [Tooltip("Additional degress to override the camera")]
     public float CameraAngleOverride = 0.0f;
 
     private float m_targetYaw;
