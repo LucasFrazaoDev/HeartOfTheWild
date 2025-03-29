@@ -10,6 +10,7 @@ public class InputReaderSO : ScriptableObject, PlayerInputController.IPlayerActi
     public event Action OnRunPerformed;
     public event Action OnAttackPerformed;
     public event Action OnShieldDefensePerformed;
+    public event Action OnPausePerformed;
 
     // UI Events
     public event Action<Vector2> OnNavigatePerformed;
@@ -115,6 +116,13 @@ public class InputReaderSO : ScriptableObject, PlayerInputController.IPlayerActi
     public Vector2 GetLookVector()
     {
         return m_isInUIMode ? Vector2.zero : m_playerInput.Player.Look.ReadValue<Vector2>().normalized;
+    }
+
+
+    public void OnPause(InputAction.CallbackContext context)
+    {
+        if (context.performed)
+            OnPausePerformed?.Invoke();
     }
 
     // Métodos da interface (não utilizados)

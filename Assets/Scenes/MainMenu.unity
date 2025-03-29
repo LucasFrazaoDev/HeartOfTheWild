@@ -199,8 +199,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 545ab60ae5ac9da45921d142da4000c7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _input: {fileID: 11400000, guid: 0d24d89b1a7993545940f050d12731af, type: 2}
-  _menuDocument: {fileID: 209906201}
+  m_input: {fileID: 11400000, guid: 0d24d89b1a7993545940f050d12731af, type: 2}
+  m_menuDocument: {fileID: 209906201}
 --- !u!4 &873337451
 Transform:
   m_ObjectHideFlags: 0
