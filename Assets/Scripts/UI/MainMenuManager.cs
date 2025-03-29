@@ -35,7 +35,7 @@ public class MainMenuManager : MonoBehaviour
     private void OnStartButtonClicked()
     {
         m_input.EnableGameplayMode();
-        SceneManager.LoadScene(_gameSceneName);
+        SceneManager.LoadScene("Loading");
     }
 
     // Novo método para sair do jogo

@@ -1,0 +1,6 @@
+<engine:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:engine="UnityEngine.UIElements" xmlns:editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <engine:VisualElement name="container-element" style="flex-grow: 1; background-color: rgb(0, 0, 0); align-items: center; justify-content: space-between; padding-top: 5%; padding-right: 5%; padding-bottom: 5%; padding-left: 5%;">
+        <engine:Label text="LOADING" name="loading-label" style="font-size: 72px; color: rgb(255, 255, 255);" />
+        <engine:ProgressBar value="0.1" title="Loading" name="loadingBar-progressBar" high-value="1" style="flex-grow: 0; width: 50%; -unity-background-image-tint-color: rgb(255, 255, 255); background-color: rgba(0, 0, 0, 0);" />
+    </engine:VisualElement>
+</engine:UXML>
