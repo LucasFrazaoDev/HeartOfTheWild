@@ -7,20 +7,24 @@ public class SceneLoader : MonoBehaviour
 {
     [Header("UI")]
     [SerializeField] private UIDocument m_loadingDocument;
-    [SerializeField] private float m_minLoadingTime = 5.0f;
+    [SerializeField] private SceneDataSO m_sceneData;
 
-    private ProgressBar m_loadingProgress;
-    private static string s_targetScene;
+    [Tooltip("Minimum time to load the screen")]
+    [SerializeField] private float m_minLoadingTime = 3.0f;
+
+    private ProgressBar m_loadingProgressBar;
+
+    private const string k_loadingBar = "loadingBar-progressBar";
 
     private void Awake()
     {
         var root = m_loadingDocument.rootVisualElement;
-        m_loadingProgress = root.Q<ProgressBar>("loadingBar-progressBar");
+        m_loadingProgressBar = root.Q<ProgressBar>(k_loadingBar);
+    }
 
-        // Configura valores iniciais (importante!)
-        m_loadingProgress.lowValue = 0f;
-        m_loadingProgress.highValue = 1f;
-        m_loadingProgress.value = 0f;
+    private void OnEnable()
+    {
+        SetProgressBarValues();
     }
 
     private void Start()
@@ -28,15 +32,17 @@ public class SceneLoader : MonoBehaviour
         StartCoroutine(LoadTargetScene());
     }
 
-    public static void LoadScene(string targetScene)
+    private void SetProgressBarValues()
     {
-        s_targetScene = targetScene;
-        SceneManager.LoadScene("Loading");
+        m_loadingProgressBar.lowValue = 0f;
+        m_loadingProgressBar.highValue = 1f;
+        m_loadingProgressBar.value = 0f;
     }
 
     private IEnumerator LoadTargetScene()
     {
-        AsyncOperation op = SceneManager.LoadSceneAsync("Game");
+        string sceneName = m_sceneData.TargetSceneName;
+        AsyncOperation op = SceneManager.LoadSceneAsync(sceneName);
         op.allowSceneActivation = false;
 
         float elapsedTime = 0f;
@@ -46,19 +52,15 @@ public class SceneLoader : MonoBehaviour
         {
             // Calcula o progresso real (0-0.9) e ajusta para (0-1)
             float loadProgress = Mathf.Clamp01(op.progress / 0.9f);
-
-            // Progresso baseado no tempo mínimo
             float timeProgress = Mathf.Clamp01(elapsedTime / m_minLoadingTime);
 
             // Usa o menor valor entre os dois progressos
             progress = Mathf.Min(loadProgress, timeProgress);
 
-            m_loadingProgress.value = progress;
+            m_loadingProgressBar.value = progress;
 
             if (progress >= 1f)
-            {
                 op.allowSceneActivation = true;
-            }
 
             elapsedTime += Time.deltaTime;
             yield return null;

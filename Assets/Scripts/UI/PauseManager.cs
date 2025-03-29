@@ -2,17 +2,21 @@ using UnityEngine;
 using UnityEngine.UIElements;
 using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
+using Unity.Loading;
 
 public class PauseManager : MonoBehaviour
 {
     [Header("UI References")]
     [SerializeField] private UIDocument m_pauseDocument;
+
+    [Header("Game Data References")]
     [SerializeField] private InputReaderSO m_input;
-    [SerializeField] private string m_mainMenuScene = "MainMenu";
+    [SerializeField] private SceneDataSO m_sceneData;
 
     private VisualElement m_pauseContainer;
     private Button m_resumeButton;
     private Button m_backMainMenuButton;
+
     private bool m_isPaused = false;
 
     private const string k_pauseContainer = "pause-container";
@@ -76,6 +80,7 @@ public class PauseManager : MonoBehaviour
     private void GoToMainMenu()
     {
         Time.timeScale = 1f;
-        SceneManager.LoadScene("MainMenu");
+        m_sceneData.TargetSceneName = m_sceneData.mainMenuScene.name;
+        SceneManager.LoadScene(m_sceneData.loadingScene.name);
     }
 }

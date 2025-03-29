@@ -201,7 +201,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_input: {fileID: 11400000, guid: 0d24d89b1a7993545940f050d12731af, type: 2}
   m_menuDocument: {fileID: 209906201}
-  _sceneData: {fileID: 11400000, guid: 32d0d4c6f4d05f543a969b1ec9defe3d, type: 2}
+  m_sceneData: {fileID: 11400000, guid: 32d0d4c6f4d05f543a969b1ec9defe3d, type: 2}
 --- !u!4 &873337451
 Transform:
   m_ObjectHideFlags: 0

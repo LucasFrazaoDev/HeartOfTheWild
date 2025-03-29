@@ -5,40 +5,50 @@ using UnityEditor;
 
 public class MainMenuManager : MonoBehaviour
 {
+    [Header("References")]
     [SerializeField] private InputReaderSO m_input;
+    [SerializeField] private SceneDataSO m_sceneData;
     [SerializeField] private UIDocument m_menuDocument;
-    private string _gameSceneName = "Game";
 
-    private Button _startButton;
-    private Button _exitButton; // Novo botão de saída
+    private Button m_startButton;
+    private Button m_exitButton;
+
+    private const string k_startButton = "start-button";
+    private const string k_exitButton = "exit-button";
 
     private void OnEnable()
     {
         m_input.EnableUIMode();
 
-        _startButton = m_menuDocument.rootVisualElement.Q<Button>("start-button");
-        _exitButton = m_menuDocument.rootVisualElement.Q<Button>("exit-button");
+        m_startButton = m_menuDocument.rootVisualElement.Q<Button>(k_startButton);
+        m_exitButton = m_menuDocument.rootVisualElement.Q<Button>(k_exitButton);
 
-        _startButton.clicked += OnStartButtonClicked;
-        _exitButton.clicked += OnExitButtonClicked; // Novo evento
+        m_startButton.clicked += OnStartButtonClicked;
+        m_exitButton.clicked += OnExitButtonClicked;
 
         // Focus on first button
-        _startButton.Focus();
+        m_startButton.Focus();
+    }
+
+    private void Start()
+    {
+        UnityEngine.Cursor.lockState = CursorLockMode.Locked;
+        UnityEngine.Cursor.visible = false;
     }
 
     private void OnDisable()
     {
-        _startButton.clicked -= OnStartButtonClicked;
-        _exitButton.clicked -= OnExitButtonClicked;
+        m_startButton.clicked -= OnStartButtonClicked;
+        m_exitButton.clicked -= OnExitButtonClicked;
     }
 
     private void OnStartButtonClicked()
     {
         m_input.EnableGameplayMode();
-        SceneManager.LoadScene("Loading");
+        m_sceneData.TargetSceneName = m_sceneData.gameScene.name;
+        SceneManager.LoadScene(m_sceneData.loadingScene.name);
     }
 
-    // Novo método para sair do jogo
     private void OnExitButtonClicked()
     {
         ExitGame();
@@ -46,8 +56,7 @@ public class MainMenuManager : MonoBehaviour
 
     public void ExitGame()
     {
-        // Desativa inputs
-        m_input.EnableGameplayMode(); // Ou seu método para desativar todos inputs
+        m_input.EnableGameplayMode();
 
 #if UNITY_EDITOR
         EditorApplication.isPlaying = false;

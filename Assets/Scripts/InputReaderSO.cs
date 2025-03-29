@@ -3,7 +3,8 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 
 [CreateAssetMenu(fileName = "InputReader", menuName = "Scriptable Objects/InputReader")]
-public class InputReaderSO : ScriptableObject, PlayerInputController.IPlayerActions, PlayerInputController.IUIActions
+public class InputReaderSO : ScriptableObject, PlayerInputController.IPlayerActions,
+                                               PlayerInputController.IUIActions
 {
     // Gameplay Events
     public event Action OnJumpPerformed;
