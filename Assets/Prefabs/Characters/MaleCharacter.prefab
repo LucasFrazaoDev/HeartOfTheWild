@@ -1048,6 +1048,7 @@ GameObject:
   - component: {fileID: 3914364326954107445}
   - component: {fileID: 1728049183687563768}
   - component: {fileID: 4711878907591067925}
+  - component: {fileID: 4989634920713219819}
   m_Layer: 0
   m_Name: MaleCharacter
   m_TagString: Player
@@ -1092,7 +1093,7 @@ CharacterController:
   serializedVersion: 3
   m_Height: 1.5
   m_Radius: 0.32
-  m_SlopeLimit: 45
+  m_SlopeLimit: 30
   m_StepOffset: 0.3
   m_SkinWidth: 0.08
   m_MinMoveDistance: 0.001
@@ -1174,6 +1175,21 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_priority: 10
   m_targetPoint: {fileID: 3764508152029923339}
+--- !u!114 &4989634920713219819
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4009214360954229765}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 00f051b18b703ba4c95dddd0910b488b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  slideSpeed: 3
+  slopeThreshold: 0.5
+  raycastDistance: 1.5
 --- !u!1 &4037690551008671404
 GameObject:
   m_ObjectHideFlags: 0
