@@ -10,7 +10,8 @@ public class InputReaderSO : ScriptableObject, PlayerInputController.IPlayerActi
     public event Action OnJumpPerformed;
     public event Action OnRunPerformed;
     public event Action OnAttackPerformed;
-    public event Action OnShieldDefensePerformed;
+    public event Action OnShieldDefenseStarted;
+    public event Action OnShieldDefenseCanceled;
     public event Action OnPausePerformed;
 
     // UI Events
@@ -86,8 +87,12 @@ public class InputReaderSO : ScriptableObject, PlayerInputController.IPlayerActi
 
     public void OnShieldDefense(InputAction.CallbackContext context)
     {
-        if (!m_isInUIMode && context.performed)
-            OnShieldDefensePerformed?.Invoke();
+        if (m_isInUIMode) return;
+
+        if (context.started)
+            OnShieldDefenseStarted?.Invoke();
+        else if (context.canceled)
+            OnShieldDefenseCanceled?.Invoke();
     }
 
     // UI Actions

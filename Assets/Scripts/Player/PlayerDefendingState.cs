@@ -40,12 +40,12 @@ public class PlayerDefendingState : PlayerBaseState
 
     private void SubscribeInputEvents()
     {
-        m_stateMachine.GameInput.OnShieldDefensePerformed += SwitchToMoveState;
+        m_stateMachine.GameInput.OnShieldDefenseCanceled += SwitchToMoveState;
     }
 
     private void UnsubscribeInputEvents()
     {
-        m_stateMachine.GameInput.OnShieldDefensePerformed -= SwitchToMoveState;
+        m_stateMachine.GameInput.OnShieldDefenseCanceled -= SwitchToMoveState;
     }
 
     private void SwitchToMoveState()

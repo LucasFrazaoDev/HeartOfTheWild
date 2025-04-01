@@ -39,7 +39,7 @@ public class PlayerMoveState : PlayerBaseState
         m_stateMachine.GameInput.OnJumpPerformed += SwitchToJumpState;
         m_stateMachine.GameInput.OnRunPerformed += SwitchToRunState;
         m_stateMachine.GameInput.OnAttackPerformed += SwitchToAttackState;
-        m_stateMachine.GameInput.OnShieldDefensePerformed += SwitchToMoveWithShieldState;
+        m_stateMachine.GameInput.OnShieldDefenseStarted += SwitchToMoveWithShieldState;
     }
 
     private void UnsubscribeInputEvents()
@@ -47,7 +47,7 @@ public class PlayerMoveState : PlayerBaseState
         m_stateMachine.GameInput.OnJumpPerformed -= SwitchToJumpState;
         m_stateMachine.GameInput.OnRunPerformed -= SwitchToRunState;
         m_stateMachine.GameInput.OnAttackPerformed -= SwitchToAttackState;
-        m_stateMachine.GameInput.OnShieldDefensePerformed -= SwitchToMoveWithShieldState;
+        m_stateMachine.GameInput.OnShieldDefenseStarted -= SwitchToMoveWithShieldState;
     }
 
     private void SwitchToJumpState()

@@ -1,8 +1,6 @@
 using UnityEngine;
 using UnityEngine.UIElements;
-using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
-using Unity.Loading;
 
 public class PauseManager : MonoBehaviour
 {
