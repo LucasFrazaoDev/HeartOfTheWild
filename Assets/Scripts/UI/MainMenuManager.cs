@@ -45,8 +45,8 @@ public class MainMenuManager : MonoBehaviour
     private void OnStartButtonClicked()
     {
         m_input.EnableGameplayMode();
-        m_sceneData.TargetSceneName = m_sceneData.gameScene.name;
-        SceneManager.LoadScene(m_sceneData.loadingScene.name);
+        m_sceneData.TargetSceneName = m_sceneData.gameScene;
+        SceneManager.LoadScene(m_sceneData.loadingScene);
     }
 
     private void OnExitButtonClicked()

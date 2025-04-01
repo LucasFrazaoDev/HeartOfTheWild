@@ -1,4 +1,3 @@
-using Unity.VisualScripting;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -13,7 +12,7 @@ public class SceneDataSO : ScriptableObject
         set => m_targetSceneName = value;
     }
 
-    public SceneAsset mainMenuScene;
-    public SceneAsset loadingScene;
-    public SceneAsset gameScene;
+    public string mainMenuScene;
+    public string loadingScene;
+    public string gameScene;
 }

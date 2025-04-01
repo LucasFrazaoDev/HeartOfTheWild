@@ -80,7 +80,7 @@ public class PauseManager : MonoBehaviour
     private void GoToMainMenu()
     {
         Time.timeScale = 1f;
-        m_sceneData.TargetSceneName = m_sceneData.mainMenuScene.name;
-        SceneManager.LoadScene(m_sceneData.loadingScene.name);
+        m_sceneData.TargetSceneName = m_sceneData.mainMenuScene;
+        SceneManager.LoadScene(m_sceneData.loadingScene);
     }
 }

@@ -215,8 +215,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_loadingDocument: {fileID: 99288848}
-  m_minLoadingTime: 3
   m_sceneData: {fileID: 11400000, guid: 32d0d4c6f4d05f543a969b1ec9defe3d, type: 2}
+  m_minLoadingTime: 3
 --- !u!1 &1945027324
 GameObject:
   m_ObjectHideFlags: 0

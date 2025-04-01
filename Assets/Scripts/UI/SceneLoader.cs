@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.UIElements;
 using UnityEngine.SceneManagement;
-using System.Collections;
+using Cysharp.Threading.Tasks;
 
 public class SceneLoader : MonoBehaviour
 {
@@ -13,7 +13,6 @@ public class SceneLoader : MonoBehaviour
     [SerializeField] private float m_minLoadingTime = 3.0f;
 
     private ProgressBar m_loadingProgressBar;
-
     private const string k_loadingBar = "loadingBar-progressBar";
 
     private void Awake()
@@ -22,14 +21,10 @@ public class SceneLoader : MonoBehaviour
         m_loadingProgressBar = root.Q<ProgressBar>(k_loadingBar);
     }
 
-    private void OnEnable()
+    private async void Start()
     {
         SetProgressBarValues();
-    }
-
-    private void Start()
-    {
-        StartCoroutine(LoadTargetScene());
+        await LoadTargetSceneAsync();
     }
 
     private void SetProgressBarValues()
@@ -39,7 +34,7 @@ public class SceneLoader : MonoBehaviour
         m_loadingProgressBar.value = 0f;
     }
 
-    private IEnumerator LoadTargetScene()
+    private async UniTask LoadTargetSceneAsync()
     {
         string sceneName = m_sceneData.TargetSceneName;
         AsyncOperation op = SceneManager.LoadSceneAsync(sceneName);
@@ -63,7 +58,8 @@ public class SceneLoader : MonoBehaviour
                 op.allowSceneActivation = true;
 
             elapsedTime += Time.deltaTime;
-            yield return null;
+
+            await UniTask.Yield(PlayerLoopTiming.Update);
         }
     }
 }

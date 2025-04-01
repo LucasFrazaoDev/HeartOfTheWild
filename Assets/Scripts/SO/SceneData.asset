@@ -12,6 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cd625dae529d35e40b1903d41bdb30e2, type: 3}
   m_Name: SceneData
   m_EditorClassIdentifier: 
-  mainMenuScene: {fileID: 102900000, guid: a84f58561111b43479ee34befcb8ba11, type: 3}
-  loadingScene: {fileID: 102900000, guid: 7e07a807be894b1438b6fd55284b395f, type: 3}
-  gameScene: {fileID: 102900000, guid: 99c9720ab356a0642a771bea13969a05, type: 3}
+  mainMenuScene: MainMenu
+  loadingScene: Loading
+  gameScene: Game
