@@ -3,7 +3,7 @@
         <engine:VisualElement style="flex-grow: 0; background-size: 50% 70%; flex-direction: column; background-color: rgba(0, 255, 5, 0); width: 50%; height: 70%; justify-content: center; align-items: center;">
             <engine:Label text="Heart of The Wild" style="color: rgb(255, 255, 255); font-size: 96px; -unity-font-definition: resource(&apos;FlatSkin/Font/Roboto-LightItalic&apos;);" />
             <engine:Button text="Start Game" name="start-button" style="width: 30%; font-size: 36px;" />
-            <engine:Button text="Settings" style="width: 30%; font-size: 36px;" />
+            <engine:Button text="Settings" name="settings-button" style="width: 30%; font-size: 36px;" />
             <engine:Button text="Quit" name="exit-button" style="width: 30%; font-size: 36px;" />
         </engine:VisualElement>
     </engine:VisualElement>

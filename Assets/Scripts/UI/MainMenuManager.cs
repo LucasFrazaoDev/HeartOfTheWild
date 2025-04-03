@@ -11,9 +11,11 @@ public class MainMenuManager : MonoBehaviour
     [SerializeField] private UIDocument m_menuDocument;
 
     private Button m_startButton;
+    private Button m_settingsButton;
     private Button m_exitButton;
 
     private const string k_startButton = "start-button";
+    private const string k_settingsButton = "settings-button";
     private const string k_exitButton = "exit-button";
 
     private void OnEnable()
@@ -21,9 +23,11 @@ public class MainMenuManager : MonoBehaviour
         m_input.EnableUIMode();
 
         m_startButton = m_menuDocument.rootVisualElement.Q<Button>(k_startButton);
+        m_settingsButton = m_menuDocument.rootVisualElement.Q<Button>(k_settingsButton);
         m_exitButton = m_menuDocument.rootVisualElement.Q<Button>(k_exitButton);
 
         m_startButton.clicked += OnStartButtonClicked;
+        m_settingsButton.clicked += OnSettingsButtonClicked;
         m_exitButton.clicked += OnExitButtonClicked;
 
         // Focus on first button
@@ -39,6 +43,7 @@ public class MainMenuManager : MonoBehaviour
     private void OnDisable()
     {
         m_startButton.clicked -= OnStartButtonClicked;
+        m_settingsButton.clicked -= OnSettingsButtonClicked;
         m_exitButton.clicked -= OnExitButtonClicked;
     }
 
@@ -46,6 +51,16 @@ public class MainMenuManager : MonoBehaviour
     {
         m_input.EnableGameplayMode();
         m_sceneData.TargetSceneName = m_sceneData.gameScene;
+        SceneManager.LoadScene(m_sceneData.loadingScene);
+    }
+
+
+    // METODO TEMPORARIO PARA A CENA DA DUNGEON
+    // ALTERAR PARA MENU SETTINGS FUTURAMENTE
+    private void OnSettingsButtonClicked()
+    {
+        m_input.EnableGameplayMode();
+        m_sceneData.TargetSceneName = m_sceneData.dungeonScene;
         SceneManager.LoadScene(m_sceneData.loadingScene);
     }
 
