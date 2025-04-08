@@ -185,7 +185,7 @@ Material:
     - _Value: 2.28
     - _WINDQUALITY: 4
     - _WIND_OVERLAY: 1
-    - _Wave_Scale: 1
+    - _Wave_Scale: 0.1
     - _WindDensity: 1.56
     - _WindMovement: 1
     - _WindQuality: 1
