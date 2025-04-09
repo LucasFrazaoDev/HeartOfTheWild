@@ -14,6 +14,6 @@ public class SceneDataSO : ScriptableObject
 
     public string mainMenuScene;
     public string loadingScene;
-    public string gameScene;
+    public string florestScene;
     public string dungeonScene;
 }

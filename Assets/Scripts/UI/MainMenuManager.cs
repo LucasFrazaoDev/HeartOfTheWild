@@ -50,7 +50,7 @@ public class MainMenuManager : MonoBehaviour
     private void OnStartButtonClicked()
     {
         m_input.EnableGameplayMode();
-        m_sceneData.TargetSceneName = m_sceneData.gameScene;
+        m_sceneData.TargetSceneName = m_sceneData.florestScene;
         SceneManager.LoadScene(m_sceneData.loadingScene);
     }
 

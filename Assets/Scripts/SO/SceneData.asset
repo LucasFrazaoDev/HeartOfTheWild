@@ -14,5 +14,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   mainMenuScene: MainMenu
   loadingScene: Loading
-  gameScene: Game
+  florestScene: Florest
   dungeonScene: Dungeon
