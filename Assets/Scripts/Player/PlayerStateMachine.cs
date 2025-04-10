@@ -8,6 +8,8 @@ public class PlayerStateMachine : StateMachine
 {
     private CharacterController m_charController;
     private Transform m_mainCamera;
+    private StatePool _statePool;
+
     [HideInInspector] public Vector3 Velocity;
 
     [Header("Player status")]
@@ -39,12 +41,22 @@ public class PlayerStateMachine : StateMachine
     private void Awake()
     {
         CharController = GetComponent<CharacterController>();
+        _statePool = new StatePool(this);
     }
 
     private void Start()
     {
         MainCamera = Camera.main.transform;
+        SwitchState(_statePool.GetState<PlayerMoveState>());
+    }
 
-        SwitchState(new PlayerMoveState(this));
+    public void SwitchToState<T>() where T : PlayerBaseState, new()
+    {
+        SwitchState(_statePool.GetState<T>());
+    }
+
+    public void ReturnStateToPool(PlayerBaseState state)
+    {
+        _statePool.ReturnState(state);
     }
 }

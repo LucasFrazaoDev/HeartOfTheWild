@@ -1,11 +1,8 @@
-using System;
 using UnityEngine;
 
 public class PlayerDefendingState : PlayerBaseState
 {
     private const float k_debuffSpeed = 0.75f;
-
-    public PlayerDefendingState(PlayerStateMachine stateMachine) : base(stateMachine) { }
 
     public override void Enter()
     {
@@ -21,7 +18,8 @@ public class PlayerDefendingState : PlayerBaseState
     {
         if (!m_stateMachine.CharController.isGrounded)
         {
-            m_stateMachine.SwitchState(new PlayerFallState(m_stateMachine));
+            m_stateMachine.SwitchToState<PlayerFallState>();
+            return;
         }
 
         CalculateMoveDirection();
@@ -34,6 +32,7 @@ public class PlayerDefendingState : PlayerBaseState
 
     public override void Exit()
     {
+        base.Exit();
         UnsubscribeInputEvents();
         m_stateMachine.PlayerAnimator.ToggleShieldDefense(0f);
     }
@@ -50,6 +49,6 @@ public class PlayerDefendingState : PlayerBaseState
 
     private void SwitchToMoveState()
     {
-        m_stateMachine.SwitchState(new PlayerMoveState(m_stateMachine));
+        m_stateMachine.SwitchToState<PlayerMoveState>();
     }
 }

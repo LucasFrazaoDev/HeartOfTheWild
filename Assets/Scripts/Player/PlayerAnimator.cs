@@ -7,7 +7,7 @@ using System;
 public class PlayerAnimator : MonoBehaviour
 {
     [SerializeField] private InputReaderSO m_inputReader;
-    [SerializeField] private float m_transitionTime = 0.07f;
+    [SerializeField] private float m_transitionTime = 0.1f;
 
     private float m_smoothSpeedX;
     private float m_smoothSpeedY;
@@ -39,24 +39,26 @@ public class PlayerAnimator : MonoBehaviour
     public void UpdateMoveAnimation(float speed)
     {
         Vector2 inputVector = m_inputReader.GetMovementVectorNormalized();
-        RoundInputValues(ref inputVector);
 
+        // Remove o RoundInputValues e mantém os valores originais do input
         float targetSpeedX = speed * inputVector.x;
         float targetSpeedY = speed * inputVector.y;
 
-        // Smooth transitions
-        float currentSpeedX = Mathf.SmoothDamp(Animator.GetFloat(m_speedHashX), targetSpeedX, ref m_smoothSpeedX, m_transitionTime);
-        float currentSpeedY = Mathf.SmoothDamp(Animator.GetFloat(m_speedHashY), targetSpeedY, ref m_smoothSpeedY, m_transitionTime);
+        // Aumenta o tempo de transição para suavização mais perceptível
+        //float transitionTime = 0.15f; // Ajuste este valor conforme necessário
 
-        // Set animations
+        float currentSpeedX = Mathf.SmoothDamp(Animator.GetFloat(m_speedHashX),
+                                             targetSpeedX,
+                                             ref m_smoothSpeedX,
+                                             m_transitionTime);
+
+        float currentSpeedY = Mathf.SmoothDamp(Animator.GetFloat(m_speedHashY),
+                                             targetSpeedY,
+                                             ref m_smoothSpeedY,
+                                             m_transitionTime);
+
         Animator.SetFloat(m_speedHashX, currentSpeedX);
         Animator.SetFloat(m_speedHashY, currentSpeedY);
-    }
-
-    private void RoundInputValues(ref Vector2 inputVector)
-    {
-        inputVector.x = Mathf.Round(inputVector.x);
-        inputVector.y = Mathf.Round(inputVector.y);
     }
 
     public void CrossFadeMoveAnimation()

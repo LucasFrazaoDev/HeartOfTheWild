@@ -3,14 +3,10 @@ using UnityEngine;
 
 public class PlayerMoveState : PlayerBaseState
 {
-    public PlayerMoveState(PlayerStateMachine stateMachine) : base(stateMachine) { }
-
     public override void Enter()
     {
         m_stateMachine.Velocity.y = Physics.gravity.y;
-
         m_stateMachine.PlayerAnimator.CrossFadeMoveAnimation();
-
         SubscribeInputEvents();
     }
 
@@ -18,7 +14,8 @@ public class PlayerMoveState : PlayerBaseState
     {
         if (!m_stateMachine.CharController.isGrounded)
         {
-            m_stateMachine.SwitchState(new PlayerFallState(m_stateMachine));
+            m_stateMachine.SwitchToState<PlayerFallState>();
+            return;
         }
 
         CalculateMoveDirection();
@@ -31,6 +28,7 @@ public class PlayerMoveState : PlayerBaseState
 
     public override void Exit()
     {
+        base.Exit();
         UnsubscribeInputEvents();
     }
 
@@ -39,7 +37,7 @@ public class PlayerMoveState : PlayerBaseState
         m_stateMachine.GameInput.OnJumpPerformed += SwitchToJumpState;
         m_stateMachine.GameInput.OnRunPerformed += SwitchToRunState;
         m_stateMachine.GameInput.OnAttackPerformed += SwitchToAttackState;
-        m_stateMachine.GameInput.OnShieldDefenseStarted += SwitchToMoveWithShieldState;
+        m_stateMachine.GameInput.OnShieldDefenseStarted += SwitchToDefendingState;
     }
 
     private void UnsubscribeInputEvents()
@@ -47,26 +45,26 @@ public class PlayerMoveState : PlayerBaseState
         m_stateMachine.GameInput.OnJumpPerformed -= SwitchToJumpState;
         m_stateMachine.GameInput.OnRunPerformed -= SwitchToRunState;
         m_stateMachine.GameInput.OnAttackPerformed -= SwitchToAttackState;
-        m_stateMachine.GameInput.OnShieldDefenseStarted -= SwitchToMoveWithShieldState;
+        m_stateMachine.GameInput.OnShieldDefenseStarted -= SwitchToDefendingState;
     }
 
     private void SwitchToJumpState()
     {
-        m_stateMachine.SwitchState(new PlayerJumpState(m_stateMachine));
+        m_stateMachine.SwitchToState<PlayerJumpState>();
     }
 
     private void SwitchToRunState()
     {
-        m_stateMachine.SwitchState(new PlayerRunState(m_stateMachine));
+        m_stateMachine.SwitchToState<PlayerRunState>();
     }
 
     private void SwitchToAttackState()
     {
-        m_stateMachine.SwitchState(new PlayerAttackState(m_stateMachine));
+        m_stateMachine.SwitchToState<PlayerAttackState>();
     }
 
-    private void SwitchToMoveWithShieldState()
+    private void SwitchToDefendingState()
     {
-        m_stateMachine.SwitchState(new PlayerDefendingState(m_stateMachine));
+        m_stateMachine.SwitchToState<PlayerDefendingState>();
     }
 }

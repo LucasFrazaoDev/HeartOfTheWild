@@ -4,19 +4,15 @@ using UnityEngine;
 
 public class PlayerAttackState : PlayerBaseState
 {
-    private int m_currentComboStep = 0;
-    private float m_comboTimer = 0f;
+    private int m_currentComboStep;
+    private float m_comboTimer;
     private const float k_comboResetTime = 1.0f;
-    private bool m_isAttacking = false;
-
-    public PlayerAttackState(PlayerStateMachine stateMachine) : base(stateMachine) { }
+    private bool m_isAttacking;
 
     public override void Enter()
     {
-        m_currentComboStep = 0;
-        m_comboTimer = 0f;
-        m_isAttacking = false;
-        PerformAttack();
+        ResetState(); // Reutiliza o mesmo método de reset
+        PerformAttack().Forget();
         m_stateMachine.GameInput.OnAttackPerformed += OnAttackPressed;
     }
 
@@ -33,21 +29,23 @@ public class PlayerAttackState : PlayerBaseState
 
     public override void Exit()
     {
+        base.Exit(); // Importante para retornar ao pool
         m_stateMachine.GameInput.OnAttackPerformed -= OnAttackPressed;
+    }
+
+    public override void ResetState()
+    {
+        m_currentComboStep = 0;
+        m_comboTimer = 0f;
+        m_isAttacking = false;
     }
 
     private void OnAttackPressed()
     {
-        if (!m_isAttacking)
+        if (!m_isAttacking && m_currentComboStep < m_stateMachine.AttackCombo.Length - 1)
         {
-            var attackCombo = m_stateMachine.AttackCombo;
-
-            // Avança para o próximo passo do combo, se houver
-            if (m_currentComboStep < attackCombo.Length - 1)
-            {
-                m_currentComboStep++;
-                PerformAttack();
-            }
+            m_currentComboStep++;
+            PerformAttack().Forget();
         }
     }
 
@@ -55,12 +53,15 @@ public class PlayerAttackState : PlayerBaseState
     {
         m_isAttacking = true;
         m_comboTimer = 0f;
-        var attackCombo = m_stateMachine.AttackCombo;
 
-        if (m_currentComboStep < attackCombo.Length)
+        if (m_currentComboStep < m_stateMachine.AttackCombo.Length)
         {
-            AttackDataSO attack = attackCombo[m_currentComboStep];
-            m_stateMachine.PlayerAnimator.PlayAttackAnimation(m_stateMachine, m_currentComboStep, OnAttackCompleted);
+            AttackDataSO attack = m_stateMachine.AttackCombo[m_currentComboStep];
+            m_stateMachine.PlayerAnimator.PlayAttackAnimation(
+                m_stateMachine,
+                m_currentComboStep,
+                OnAttackCompleted);
+
             Debug.Log($"Attack: {attack.attackName} Damage: {attack.damage}");
         }
 
@@ -74,8 +75,6 @@ public class PlayerAttackState : PlayerBaseState
 
     private void ResetCombo()
     {
-        m_currentComboStep = 0;
-        m_comboTimer = 0f;
-        m_stateMachine.SwitchState(new PlayerMoveState(m_stateMachine));
+        m_stateMachine.SwitchToState<PlayerMoveState>();
     }
 }
