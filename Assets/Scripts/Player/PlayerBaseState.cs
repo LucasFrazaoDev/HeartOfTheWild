@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public abstract class PlayerBaseState : State
+public abstract class PlayerBaseState : State,IResettable
 {
     protected PlayerStateMachine m_stateMachine;
     private Vector3 m_currentVelocity;
@@ -8,13 +8,14 @@ public abstract class PlayerBaseState : State
     private const float k_directionChangeThreshold = 0.7f;
     private bool m_shouldResetVelocity;
 
-    public void Initialize(PlayerStateMachine stateMachine)
+    public void Initialize(PlayerStateMachine machine)
     {
-        m_stateMachine = stateMachine;
+        m_stateMachine = machine;
     }
 
     public virtual void ResetState()
     {
+        // Implementação do reset
         m_currentVelocity = Vector3.zero;
         m_lastMoveDirection = Vector3.zero;
         m_shouldResetVelocity = true;

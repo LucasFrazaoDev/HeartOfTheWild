@@ -3,35 +3,57 @@ using System.Collections.Generic;
 
 public class StatePool
 {
-    private readonly Dictionary<Type, Stack<PlayerBaseState>> _pool = new();
-    private readonly PlayerStateMachine _stateMachine;
+    private readonly Dictionary<Type, Stack<State>> _pool = new();
+    private readonly object _stateMachine;
 
-    public StatePool(PlayerStateMachine stateMachine)
+    public StatePool(object stateMachine)
     {
         _stateMachine = stateMachine;
     }
 
-    public T GetState<T>() where T : PlayerBaseState, new()
+    public T GetState<T>() where T : State, new()
     {
         if (!_pool.TryGetValue(typeof(T), out var stack) || stack.Count == 0)
         {
             var newState = new T();
-            newState.Initialize(_stateMachine);
+            InitializeState(newState);
             return newState;
         }
 
         var state = (T)stack.Pop();
-        state.ResetState();
+        if (state is IResettable resettable)
+            resettable.ResetState();
         return state;
     }
 
-    public void ReturnState(PlayerBaseState state)
+    private void InitializeState(State state)
+    {
+        switch (_stateMachine)
+        {
+            case PlayerStateMachine playerMachine when state is PlayerBaseState playerState:
+                playerState.Initialize(playerMachine);
+                break;
+
+            case SpiderStateMachine spiderMachine when state is SpiderBaseState spiderState:
+                spiderState.Initialize(spiderMachine);
+                break;
+
+            default:
+                throw new InvalidOperationException("Combinação inválida de StateMachine e State");
+        }
+    }
+
+    public void ReturnState(State state)
     {
         Type type = state.GetType();
         if (!_pool.ContainsKey(type))
-        {
-            _pool[type] = new Stack<PlayerBaseState>();
-        }
+            _pool[type] = new Stack<State>();
+
         _pool[type].Push(state);
     }
+}
+
+public interface IResettable
+{
+    void ResetState();
 }

@@ -40,13 +40,8 @@ public class PlayerStateMachine : StateMachine
 
     private void Awake()
     {
-        CharController = GetComponent<CharacterController>();
+        m_charController = GetComponent<CharacterController>();
         _statePool = new StatePool(this);
-    }
-
-    private void Start()
-    {
-        MainCamera = Camera.main.transform;
         SwitchState(_statePool.GetState<PlayerMoveState>());
     }
 
@@ -55,6 +50,13 @@ public class PlayerStateMachine : StateMachine
         SwitchState(_statePool.GetState<T>());
     }
 
+    private void Start()
+    {
+        m_mainCamera = Camera.main.transform;
+        SwitchState(_statePool.GetState<PlayerMoveState>());
+    }
+
+    // Método opcional - pode ser removido se não for usado
     public void ReturnStateToPool(PlayerBaseState state)
     {
         _statePool.ReturnState(state);
