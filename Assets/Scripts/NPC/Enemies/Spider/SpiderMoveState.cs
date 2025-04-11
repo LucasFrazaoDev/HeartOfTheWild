@@ -4,7 +4,10 @@ using UnityEngine.AI;
 public class SpiderMoveState : SpiderBaseState
 {
     // Spider settings
-    private float m_idleDuration = 3f;
+    private float m_idleDuration = 0f;
+    private float m_minIdleDuration = 1f;
+    private float m_maxIdleDuration = 6f;
+
     private float m_walkSpeed = 3.5f;
     private float m_stoppingDistance = 1f;
     private float m_searchRadius = 10f;
@@ -18,6 +21,8 @@ public class SpiderMoveState : SpiderBaseState
     public override void Enter()
     {
         m_timer = 0f;
+        m_idleDuration = Random.Range(m_minIdleDuration, m_maxIdleDuration);
+
         m_isMoving = false;
         m_stateMachine.NavAgent.isStopped = true;
         m_stateMachine.SpiderAnimator.UpdateMovementSpeed(0f);
