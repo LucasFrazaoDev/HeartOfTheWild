@@ -2,34 +2,33 @@ using UnityEngine;
 
 public class SpiderChaseState : SpiderBaseState
 {
-    [Header("Chase Settings")]
-    [SerializeField] private float _chaseSpeedMultiplier = 1.5f;
-    [SerializeField] private float _chaseRange = 15f;
-    [SerializeField] private float _attackRange = 2f;
-    [SerializeField] private float _maxChaseDuration = 10f;
+    private float m_chaseSpeedMultiplier = 1.5f;
+    private float m_chaseRange = 15f;
+    private float m_attackRange = 2f;
+    private float m_maxChaseDuration = 10f;
 
-    private float _chaseTimer;
-    private float _originalStoppingDistance;
+    private float m_chaseTimer;
+    private float m_originalStoppingDistance;
 
     public override void Enter()
     {
-        // Configurações iniciais
-        _chaseTimer = 0f;
-        _originalStoppingDistance = m_stateMachine.NavAgent.stoppingDistance;
-        m_stateMachine.NavAgent.stoppingDistance = _attackRange * 0.8f;
+        // Initial setup
+        m_chaseTimer = 0f;
+        m_originalStoppingDistance = m_stateMachine.NavAgent.stoppingDistance;
+        m_stateMachine.NavAgent.stoppingDistance = m_attackRange * 0.8f;
 
-        // Ajusta velocidade
-        m_stateMachine.NavAgent.speed = m_stateMachine.WalkSpeed * _chaseSpeedMultiplier;
+        // Adjust speed and state
+        m_stateMachine.NavAgent.speed = m_stateMachine.WalkSpeed * m_chaseSpeedMultiplier;
         m_stateMachine.NavAgent.isStopped = false;
     }
 
     public override void Tick()
     {
-        _chaseTimer += Time.deltaTime;
+        m_chaseTimer += Time.deltaTime;
 
-        if (m_stateMachine.Player == null || _chaseTimer >= _maxChaseDuration)
+        if (m_stateMachine.Player == null || m_chaseTimer >= m_maxChaseDuration)
         {
-            m_stateMachine.SwitchToState<SpiderIdleState>();
+            m_stateMachine.SwitchToState<SpiderMoveState>();
             return;
         }
 
@@ -40,14 +39,14 @@ public class SpiderChaseState : SpiderBaseState
 
     public override void Exit()
     {
-        m_stateMachine.NavAgent.stoppingDistance = _originalStoppingDistance;
+        m_stateMachine.NavAgent.stoppingDistance = m_originalStoppingDistance;
         m_stateMachine.SpiderAnimator.UpdateMovementSpeed(0f);
     }
 
     private void UpdateAnimation()
     {
         float currentSpeed = m_stateMachine.NavAgent.velocity.magnitude;
-        float normalizedSpeed = currentSpeed / (m_stateMachine.WalkSpeed * _chaseSpeedMultiplier);
+        float normalizedSpeed = currentSpeed / (m_stateMachine.WalkSpeed * m_chaseSpeedMultiplier);
         m_stateMachine.SpiderAnimator.UpdateMovementSpeed(normalizedSpeed);
     }
 
@@ -62,12 +61,13 @@ public class SpiderChaseState : SpiderBaseState
             playerPosition
         );
 
-        if (distanceToPlayer > _chaseRange)
+        if (distanceToPlayer > m_chaseRange)
         {
-            m_stateMachine.SwitchToState<SpiderIdleState>();
+            m_stateMachine.SwitchToState<SpiderMoveState>();
         }
-        else if (distanceToPlayer <= _attackRange)
+        else if (distanceToPlayer <= m_attackRange)
         {
+            // TODO
             // m_stateMachine.SwitchToState<SpiderAttackState>();
         }
     }

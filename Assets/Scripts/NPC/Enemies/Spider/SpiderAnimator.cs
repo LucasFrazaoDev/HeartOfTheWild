@@ -4,32 +4,32 @@ using UnityEngine;
 public class SpiderAnimator : MonoBehaviour
 {
     [Header("Animation Settings")]
-    [SerializeField] private float _speedSmoothTime = 0.1f;
+    [SerializeField] private float m_speedSmoothTime = 0.1f;
 
-    private Animator _animator;
-    private float _currentSpeed;
-    private float _speedSmoothVelocity;
+    private Animator m_animator;
+    private float m_currentSpeed;
+    private float m_speedSmoothVelocity;
 
     private readonly int m_speedHash = Animator.StringToHash("Speed");
 
     private void Awake()
     {
-        _animator = GetComponent<Animator>();
+        m_animator = GetComponent<Animator>();
     }
 
     public void UpdateMovementSpeed(float rawSpeed)
     {
-        // Converte a velocidade real para valor normalizado (0-1)
+        // Convert raw speed to a value between 0 and 1
         float normalizedSpeed = Mathf.Clamp01(rawSpeed);
 
-        // Suaviza a transição
-        _currentSpeed = Mathf.SmoothDamp(
-            _currentSpeed,
+        // Smooth transition
+        m_currentSpeed = Mathf.SmoothDamp(
+            m_currentSpeed,
             normalizedSpeed,
-            ref _speedSmoothVelocity,
-            _speedSmoothTime
+            ref m_speedSmoothVelocity,
+            m_speedSmoothTime
         );
 
-        _animator.SetFloat(m_speedHash, normalizedSpeed);
+        m_animator.SetFloat(m_speedHash, m_currentSpeed);
     }
 }

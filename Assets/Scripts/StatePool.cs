@@ -3,17 +3,17 @@ using System.Collections.Generic;
 
 public class StatePool
 {
-    private readonly Dictionary<Type, Stack<State>> _pool = new();
-    private readonly object _stateMachine;
+    private readonly Dictionary<Type, Stack<State>> m_pool = new();
+    private readonly object m_stateMachine;
 
     public StatePool(object stateMachine)
     {
-        _stateMachine = stateMachine;
+        m_stateMachine = stateMachine;
     }
 
     public T GetState<T>() where T : State, new()
     {
-        if (!_pool.TryGetValue(typeof(T), out var stack) || stack.Count == 0)
+        if (!m_pool.TryGetValue(typeof(T), out var stack) || stack.Count == 0)
         {
             var newState = new T();
             InitializeState(newState);
@@ -28,7 +28,7 @@ public class StatePool
 
     private void InitializeState(State state)
     {
-        switch (_stateMachine)
+        switch (m_stateMachine)
         {
             case PlayerStateMachine playerMachine when state is PlayerBaseState playerState:
                 playerState.Initialize(playerMachine);
@@ -46,10 +46,10 @@ public class StatePool
     public void ReturnState(State state)
     {
         Type type = state.GetType();
-        if (!_pool.ContainsKey(type))
-            _pool[type] = new Stack<State>();
+        if (!m_pool.ContainsKey(type))
+            m_pool[type] = new Stack<State>();
 
-        _pool[type].Push(state);
+        m_pool[type].Push(state);
     }
 }
 

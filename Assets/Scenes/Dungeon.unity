@@ -72178,7 +72178,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_rotationSpeed: 20
   m_walkSpeed: 2
-  _player: {fileID: 820326521}
+  m_player: {fileID: 820326521}
   m_spiderAnimator: {fileID: 1703638605}
 --- !u!195 &1703638603
 NavMeshAgent:
@@ -72236,7 +72236,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 30ac0417a44def544852a63fc7fca2ee, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _transitionTime: 0.1
+  m_speedSmoothTime: 0.1
 --- !u!1001 &1704315367
 PrefabInstance:
   m_ObjectHideFlags: 0
