@@ -56,7 +56,6 @@ public class PlayerStateMachine : StateMachine
         SwitchState(_statePool.GetState<PlayerMoveState>());
     }
 
-    // Método opcional - pode ser removido se não for usado
     public void ReturnStateToPool(PlayerBaseState state)
     {
         _statePool.ReturnState(state);

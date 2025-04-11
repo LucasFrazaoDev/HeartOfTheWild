@@ -1,36 +1,68 @@
-using UnityEngine.AI;
 using UnityEngine;
+using UnityEngine.AI;
 
 public class SpiderWalkState : SpiderBaseState
 {
-    private Vector3 _targetPosition;
+    private Vector3 _destination;
+    private float _walkSpeed;
+    private const float _stoppingDistance = 1f;
+    private const float _searchRadius = 10f;
 
     public override void Enter()
     {
-        _targetPosition = GetRandomNavMeshPosition(5f);
-        m_stateMachine.NavAgent.SetDestination(_targetPosition);
-        m_stateMachine.NavAgent.speed = m_stateMachine.WalkSpeed;
+        _walkSpeed = m_stateMachine.WalkSpeed;
+        m_stateMachine.NavAgent.isStopped = false;
+        m_stateMachine.NavAgent.speed = _walkSpeed;
+        m_stateMachine.NavAgent.stoppingDistance = _stoppingDistance;
+
+        FindNewDestination();
     }
 
     public override void Tick()
     {
+        float normalizedSpeed = m_stateMachine.NavAgent.velocity.magnitude / _walkSpeed;
+        m_stateMachine.SpiderAnimator.UpdateMovementSpeed(normalizedSpeed);
+
+        if (m_stateMachine.IsPlayerInDetectionRange())
+        {
+            m_stateMachine.SwitchToState<SpiderChaseState>();
+            return;
+        }
+
         if (HasReachedDestination())
+        {
             m_stateMachine.SwitchToState<SpiderIdleState>();
+        }
     }
 
     public override void Exit()
     {
-        throw new System.NotImplementedException();
+        m_stateMachine.SpiderAnimator.UpdateMovementSpeed(0f);
     }
 
-    private Vector3 GetRandomNavMeshPosition(float radius)
+    private void FindNewDestination()
     {
-        Vector3 randomPoint = Random.insideUnitSphere * radius + m_stateMachine.transform.position;
-        NavMesh.SamplePosition(randomPoint, out NavMeshHit hit, radius, NavMesh.AllAreas);
-        return hit.position;
+        for (int i = 0; i < 3; i++) // Tenta 3 vezes encontrar um ponto válido
+        {
+            Vector3 randomPoint = m_stateMachine.transform.position +
+                                Random.insideUnitSphere * _searchRadius;
+
+            if (NavMesh.SamplePosition(randomPoint, out NavMeshHit hit, _searchRadius, NavMesh.AllAreas))
+            {
+                _destination = hit.position;
+                m_stateMachine.NavAgent.SetDestination(_destination);
+                return;
+            }
+        }
+
+        // Fallback se não encontrar ponto válido
+        _destination = m_stateMachine.transform.position;
     }
 
     private bool HasReachedDestination()
-        => !m_stateMachine.NavAgent.pathPending &&
-           m_stateMachine.NavAgent.remainingDistance <= m_stateMachine.NavAgent.stoppingDistance;
+    {
+        return !m_stateMachine.NavAgent.pathPending &&
+               m_stateMachine.NavAgent.remainingDistance <= _stoppingDistance &&
+               m_stateMachine.NavAgent.velocity.sqrMagnitude == 0f;
+    }
 }

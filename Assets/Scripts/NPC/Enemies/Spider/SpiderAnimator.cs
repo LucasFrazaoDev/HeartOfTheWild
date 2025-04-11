@@ -3,48 +3,33 @@ using UnityEngine;
 [RequireComponent(typeof(Animator))]
 public class SpiderAnimator : MonoBehaviour
 {
-    [SerializeField] private float _transitionTime = 0.1f;
+    [Header("Animation Settings")]
+    [SerializeField] private float _speedSmoothTime = 0.1f;
 
     private Animator _animator;
-    private int _speedHash = Animator.StringToHash("Speed");
     private float _currentSpeed;
-    private float _smoothVelocity;
+    private float _speedSmoothVelocity;
 
-    // Hashes para os estados de animação
-    private readonly int _idleStateHash = Animator.StringToHash("Spider_Idle");
-    private readonly int _walkStateHash = Animator.StringToHash("Spider_Walk");
+    private readonly int m_speedHash = Animator.StringToHash("Speed");
 
     private void Awake()
     {
         _animator = GetComponent<Animator>();
     }
 
-    public void UpdateMovementAnimation(float speed)
+    public void UpdateMovementSpeed(float rawSpeed)
     {
-        // Suaviza a transição de velocidade
+        // Converte a velocidade real para valor normalizado (0-1)
+        float normalizedSpeed = Mathf.Clamp01(rawSpeed);
+
+        // Suaviza a transição
         _currentSpeed = Mathf.SmoothDamp(
             _currentSpeed,
-            speed,
-            ref _smoothVelocity,
-            _transitionTime
+            normalizedSpeed,
+            ref _speedSmoothVelocity,
+            _speedSmoothTime
         );
 
-        _animator.SetFloat(_speedHash, _currentSpeed);
-    }
-
-    public void PlayIdleAnimation()
-    {
-        _animator.CrossFade(_idleStateHash, _transitionTime);
-    }
-
-    public void PlayWalkAnimation()
-    {
-        _animator.CrossFade(_walkStateHash, _transitionTime);
-    }
-
-    public void SetMovementSpeed(float normalizedSpeed)
-    {
-        // Para blend tree 1D simples (0 = idle, 1 = walk)
-        _animator.SetFloat(_speedHash, Mathf.Clamp01(normalizedSpeed));
+        _animator.SetFloat(m_speedHash, normalizedSpeed);
     }
 }
