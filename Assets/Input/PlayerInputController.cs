@@ -500,6 +500,34 @@ public partial class @PlayerInputController: IInputActionCollection2, IDisposabl
                     ""isPartOfComposite"": false
                 }
             ]
+        },
+        {
+            ""name"": ""DevConsole"",
+            ""id"": ""00d39291-de9d-4f0a-b12b-986acb6fd420"",
+            ""actions"": [
+                {
+                    ""name"": ""ToggleConsole"",
+                    ""type"": ""Button"",
+                    ""id"": ""d195b3f3-ebd4-45f9-b2b8-226c76cc94a2"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                }
+            ],
+            ""bindings"": [
+                {
+                    ""name"": """",
+                    ""id"": ""7adf2ded-d1a4-4c2d-a370-cb105650f1e0"",
+                    ""path"": ""<Keyboard>/backquote"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";KeyboardMouse"",
+                    ""action"": ""ToggleConsole"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                }
+            ]
         }
     ],
     ""controlSchemes"": [
@@ -546,12 +574,16 @@ public partial class @PlayerInputController: IInputActionCollection2, IDisposabl
         m_UI_Navigate = m_UI.FindAction("Navigate", throwIfNotFound: true);
         m_UI_Submit = m_UI.FindAction("Submit", throwIfNotFound: true);
         m_UI_Cancel = m_UI.FindAction("Cancel", throwIfNotFound: true);
+        // DevConsole
+        m_DevConsole = asset.FindActionMap("DevConsole", throwIfNotFound: true);
+        m_DevConsole_ToggleConsole = m_DevConsole.FindAction("ToggleConsole", throwIfNotFound: true);
     }
 
     ~@PlayerInputController()
     {
         UnityEngine.Debug.Assert(!m_Player.enabled, "This will cause a leak and performance issues, PlayerInputController.Player.Disable() has not been called.");
         UnityEngine.Debug.Assert(!m_UI.enabled, "This will cause a leak and performance issues, PlayerInputController.UI.Disable() has not been called.");
+        UnityEngine.Debug.Assert(!m_DevConsole.enabled, "This will cause a leak and performance issues, PlayerInputController.DevConsole.Disable() has not been called.");
     }
 
     /// <summary>
@@ -903,6 +935,102 @@ public partial class @PlayerInputController: IInputActionCollection2, IDisposabl
     /// Provides a new <see cref="UIActions" /> instance referencing this action map.
     /// </summary>
     public UIActions @UI => new UIActions(this);
+
+    // DevConsole
+    private readonly InputActionMap m_DevConsole;
+    private List<IDevConsoleActions> m_DevConsoleActionsCallbackInterfaces = new List<IDevConsoleActions>();
+    private readonly InputAction m_DevConsole_ToggleConsole;
+    /// <summary>
+    /// Provides access to input actions defined in input action map "DevConsole".
+    /// </summary>
+    public struct DevConsoleActions
+    {
+        private @PlayerInputController m_Wrapper;
+
+        /// <summary>
+        /// Construct a new instance of the input action map wrapper class.
+        /// </summary>
+        public DevConsoleActions(@PlayerInputController wrapper) { m_Wrapper = wrapper; }
+        /// <summary>
+        /// Provides access to the underlying input action "DevConsole/ToggleConsole".
+        /// </summary>
+        public InputAction @ToggleConsole => m_Wrapper.m_DevConsole_ToggleConsole;
+        /// <summary>
+        /// Provides access to the underlying input action map instance.
+        /// </summary>
+        public InputActionMap Get() { return m_Wrapper.m_DevConsole; }
+        /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.Enable()" />
+        public void Enable() { Get().Enable(); }
+        /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.Disable()" />
+        public void Disable() { Get().Disable(); }
+        /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.enabled" />
+        public bool enabled => Get().enabled;
+        /// <summary>
+        /// Implicitly converts an <see ref="DevConsoleActions" /> to an <see ref="InputActionMap" /> instance.
+        /// </summary>
+        public static implicit operator InputActionMap(DevConsoleActions set) { return set.Get(); }
+        /// <summary>
+        /// Adds <see cref="InputAction.started"/>, <see cref="InputAction.performed"/> and <see cref="InputAction.canceled"/> callbacks provided via <param cref="instance" /> on all input actions contained in this map.
+        /// </summary>
+        /// <param name="instance">Callback instance.</param>
+        /// <remarks>
+        /// If <paramref name="instance" /> is <c>null</c> or <paramref name="instance"/> have already been added this method does nothing.
+        /// </remarks>
+        /// <seealso cref="DevConsoleActions" />
+        public void AddCallbacks(IDevConsoleActions instance)
+        {
+            if (instance == null || m_Wrapper.m_DevConsoleActionsCallbackInterfaces.Contains(instance)) return;
+            m_Wrapper.m_DevConsoleActionsCallbackInterfaces.Add(instance);
+            @ToggleConsole.started += instance.OnToggleConsole;
+            @ToggleConsole.performed += instance.OnToggleConsole;
+            @ToggleConsole.canceled += instance.OnToggleConsole;
+        }
+
+        /// <summary>
+        /// Removes <see cref="InputAction.started"/>, <see cref="InputAction.performed"/> and <see cref="InputAction.canceled"/> callbacks provided via <param cref="instance" /> on all input actions contained in this map.
+        /// </summary>
+        /// <remarks>
+        /// Calling this method when <paramref name="instance" /> have not previously been registered has no side-effects.
+        /// </remarks>
+        /// <seealso cref="DevConsoleActions" />
+        private void UnregisterCallbacks(IDevConsoleActions instance)
+        {
+            @ToggleConsole.started -= instance.OnToggleConsole;
+            @ToggleConsole.performed -= instance.OnToggleConsole;
+            @ToggleConsole.canceled -= instance.OnToggleConsole;
+        }
+
+        /// <summary>
+        /// Unregisters <param cref="instance" /> and unregisters all input action callbacks via <see cref="DevConsoleActions.UnregisterCallbacks(IDevConsoleActions)" />.
+        /// </summary>
+        /// <seealso cref="DevConsoleActions.UnregisterCallbacks(IDevConsoleActions)" />
+        public void RemoveCallbacks(IDevConsoleActions instance)
+        {
+            if (m_Wrapper.m_DevConsoleActionsCallbackInterfaces.Remove(instance))
+                UnregisterCallbacks(instance);
+        }
+
+        /// <summary>
+        /// Replaces all existing callback instances and previously registered input action callbacks associated with them with callbacks provided via <param cref="instance" />.
+        /// </summary>
+        /// <remarks>
+        /// If <paramref name="instance" /> is <c>null</c>, calling this method will only unregister all existing callbacks but not register any new callbacks.
+        /// </remarks>
+        /// <seealso cref="DevConsoleActions.AddCallbacks(IDevConsoleActions)" />
+        /// <seealso cref="DevConsoleActions.RemoveCallbacks(IDevConsoleActions)" />
+        /// <seealso cref="DevConsoleActions.UnregisterCallbacks(IDevConsoleActions)" />
+        public void SetCallbacks(IDevConsoleActions instance)
+        {
+            foreach (var item in m_Wrapper.m_DevConsoleActionsCallbackInterfaces)
+                UnregisterCallbacks(item);
+            m_Wrapper.m_DevConsoleActionsCallbackInterfaces.Clear();
+            AddCallbacks(instance);
+        }
+    }
+    /// <summary>
+    /// Provides a new <see cref="DevConsoleActions" /> instance referencing this action map.
+    /// </summary>
+    public DevConsoleActions @DevConsole => new DevConsoleActions(this);
     private int m_KeyboardMouseSchemeIndex = -1;
     /// <summary>
     /// Provides access to the input control scheme.
@@ -1014,5 +1142,20 @@ public partial class @PlayerInputController: IInputActionCollection2, IDisposabl
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnCancel(InputAction.CallbackContext context);
+    }
+    /// <summary>
+    /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "DevConsole" which allows adding and removing callbacks.
+    /// </summary>
+    /// <seealso cref="DevConsoleActions.AddCallbacks(IDevConsoleActions)" />
+    /// <seealso cref="DevConsoleActions.RemoveCallbacks(IDevConsoleActions)" />
+    public interface IDevConsoleActions
+    {
+        /// <summary>
+        /// Method invoked when associated input action "ToggleConsole" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnToggleConsole(InputAction.CallbackContext context);
     }
 }

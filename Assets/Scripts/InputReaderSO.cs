@@ -4,7 +4,8 @@ using UnityEngine.InputSystem;
 
 [CreateAssetMenu(fileName = "InputReader", menuName = "Scriptable Objects/InputReader")]
 public class InputReaderSO : ScriptableObject, PlayerInputController.IPlayerActions,
-                                               PlayerInputController.IUIActions
+                                               PlayerInputController.IUIActions,
+                                               PlayerInputController.IDevConsoleActions
 {
     // Gameplay Events
     public event Action OnJumpPerformed;
@@ -13,6 +14,9 @@ public class InputReaderSO : ScriptableObject, PlayerInputController.IPlayerActi
     public event Action OnShieldDefenseStarted;
     public event Action OnShieldDefenseCanceled;
     public event Action OnPausePerformed;
+
+    // Dev Console Events
+    public event Action OnToggleConsolePerformed;
 
     // UI Events
     public event Action<Vector2> OnNavigatePerformed;
@@ -26,17 +30,30 @@ public class InputReaderSO : ScriptableObject, PlayerInputController.IPlayerActi
 
     private void OnEnable()
     {
+        InitializePlayerInput();
+    }
+
+    private void OnDisable()
+    {
+        CleanupPlayerInput();
+    }
+
+    private void InitializePlayerInput()
+    {
         if (m_playerInput == null)
         {
             m_playerInput = new PlayerInputController();
             m_playerInput.Player.SetCallbacks(this);
             m_playerInput.UI.SetCallbacks(this);
+            m_playerInput.DevConsole.SetCallbacks(this);
+
+            m_playerInput.DevConsole.Enable();
 
             EnableUIMode();
         }
     }
 
-    private void OnDisable()
+    private void CleanupPlayerInput()
     {
         if (m_playerInput != null)
         {
@@ -47,6 +64,7 @@ public class InputReaderSO : ScriptableObject, PlayerInputController.IPlayerActi
             m_playerInput.UI.Navigate.performed -= OnNavigate;
             m_playerInput.UI.Submit.performed -= OnSubmit;
             m_playerInput.UI.Cancel.performed -= OnCancel;
+
 
             m_playerInput.Disable();
         }
@@ -66,7 +84,17 @@ public class InputReaderSO : ScriptableObject, PlayerInputController.IPlayerActi
         m_isInUIMode = false;
     }
 
-    // Gameplay Actions
+    #region GameplayActions
+    public Vector2 GetMovementVectorNormalized()
+    {
+        return m_isInUIMode ? Vector2.zero : m_playerInput.Player.Move.ReadValue<Vector2>().normalized;
+    }
+
+    public Vector2 GetLookVector()
+    {
+        return m_isInUIMode ? Vector2.zero : m_playerInput.Player.Look.ReadValue<Vector2>().normalized;
+    }
+
     public void OnJump(InputAction.CallbackContext context)
     {
         if (!m_isInUIMode && context.performed)
@@ -94,8 +122,10 @@ public class InputReaderSO : ScriptableObject, PlayerInputController.IPlayerActi
         else if (context.canceled)
             OnShieldDefenseCanceled?.Invoke();
     }
+    #endregion
 
     // UI Actions
+    #region UIActions
     public void OnNavigate(InputAction.CallbackContext context)
     {
         //if (m_isInUIMode && context.performed)
@@ -114,22 +144,19 @@ public class InputReaderSO : ScriptableObject, PlayerInputController.IPlayerActi
             OnUICancelPerformed?.Invoke();
     }
 
-    public Vector2 GetMovementVectorNormalized()
-    {
-        return m_isInUIMode ? Vector2.zero : m_playerInput.Player.Move.ReadValue<Vector2>().normalized;
-    }
-
-    public Vector2 GetLookVector()
-    {
-        return m_isInUIMode ? Vector2.zero : m_playerInput.Player.Look.ReadValue<Vector2>().normalized;
-    }
-
-
     public void OnPause(InputAction.CallbackContext context)
     {
         if (context.performed)
             OnPausePerformed?.Invoke();
     }
+
+    // DevConsole
+    public void OnToggleConsole(InputAction.CallbackContext context)
+    {
+        if (context.performed)
+            OnToggleConsolePerformed?.Invoke();
+    }
+    #endregion
 
     // Métodos da interface (não utilizados)
     public void OnMove(InputAction.CallbackContext context) { }

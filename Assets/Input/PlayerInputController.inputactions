@@ -414,6 +414,34 @@
                     "isPartOfComposite": false
                 }
             ]
+        },
+        {
+            "name": "DevConsole",
+            "id": "00d39291-de9d-4f0a-b12b-986acb6fd420",
+            "actions": [
+                {
+                    "name": "ToggleConsole",
+                    "type": "Button",
+                    "id": "d195b3f3-ebd4-45f9-b2b8-226c76cc94a2",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "7adf2ded-d1a4-4c2d-a370-cb105650f1e0",
+                    "path": "<Keyboard>/backquote",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";KeyboardMouse",
+                    "action": "ToggleConsole",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
         }
     ],
     "controlSchemes": [
