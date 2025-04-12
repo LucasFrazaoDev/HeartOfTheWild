@@ -52,8 +52,3 @@ public class StatePool
         m_pool[type].Push(state);
     }
 }
-
-public interface IResettable
-{
-    void ResetState();
-}

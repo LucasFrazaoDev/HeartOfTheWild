@@ -9,6 +9,9 @@ public class PlayerStateMachine : StateMachine
     private CharacterController m_charController;
     private Transform m_mainCamera;
     private StatePool m_statePool;
+    private SlopeSliding m_slopeSliding;
+
+    private bool m_noclipActive = false;
 
     [HideInInspector] public Vector3 Velocity;
 
@@ -37,12 +40,13 @@ public class PlayerStateMachine : StateMachine
     public AttackDataSO[] AttackCombo { get => m_attackCombo; set => m_attackCombo = value; }
     public float GravityMultiplier { get => m_gravityMultiplier; set => m_gravityMultiplier = value; }
     public float MaxFallSpeed { get => m_maxFallSpeed; set => m_maxFallSpeed = value; }
+    public bool NoclipActive { get => m_noclipActive; set => m_noclipActive = value; }
 
     private void Awake()
     {
         m_charController = GetComponent<CharacterController>();
         m_statePool = new StatePool(this);
-        SwitchState(m_statePool.GetState<PlayerMoveState>());
+        m_slopeSliding = GetComponent<SlopeSliding>();
     }
 
     public void SwitchToState<T>() where T : PlayerBaseState, new()
@@ -59,5 +63,37 @@ public class PlayerStateMachine : StateMachine
     public void ReturnStateToPool(PlayerBaseState state)
     {
         m_statePool.ReturnState(state);
+    }
+
+    public void ToggleNoclip()
+    {
+        m_noclipActive = !m_noclipActive;
+
+        if (m_noclipActive)
+        {
+            // False value to disable collisions
+            ToggleColisions(false);
+            SwitchToState<PlayerNoclipState>();
+        }
+        else
+        {
+            // True value to enable collisions
+            ToggleColisions(true);
+            SwitchToState<PlayerMoveState>();
+        }
+    }
+
+    private void ToggleColisions(bool collisionIsActive)
+    {
+        if (collisionIsActive)
+        {
+            m_charController.enabled = true;
+            m_slopeSliding.enabled = true;
+        }
+        else
+        {
+            m_charController.enabled = false;
+            m_slopeSliding.enabled = false;
+        }
     }
 }

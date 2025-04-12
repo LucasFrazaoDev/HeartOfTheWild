@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.UIElements;
-using UnityEngine.InputSystem;
-using Unity.VisualScripting;
+using System;
+using System.Collections.Generic;
 
 public class DeveloperConsole : MonoBehaviour
 {
@@ -14,9 +14,15 @@ public class DeveloperConsole : MonoBehaviour
     [SerializeField] private InputReaderSO m_inputReader;
 
     private VisualElement m_root;
-    private ScrollView m_scrollView;
     private TextField m_inputField;
+    private ScrollView m_scrollView;
     private bool m_isVisible;
+
+    // Commands system
+    private Dictionary<string, Action<string[]>> m_commands = new();
+    private Dictionary<string, string> m_commandDescriptions = new();
+    private List<string> m_commandHistory = new();
+    private int m_historyIndex = 0;
 
     private void Awake()
     {
@@ -29,6 +35,7 @@ public class DeveloperConsole : MonoBehaviour
         Instance = this;
         DontDestroyOnLoad(gameObject);
         InitializeUI();
+        RegisterDefaultCommands();
     }
 
     private void InitializeUI()
@@ -37,19 +44,14 @@ public class DeveloperConsole : MonoBehaviour
         m_inputField = m_root.Q<TextField>("inputField");
         m_scrollView = m_root.Q<ScrollView>("scrollView");
 
-        m_inputField.RegisterCallback<KeyDownEvent>(OnInputKeyDown, TrickleDown.TrickleDown);
-        m_inputField.RegisterCallback<NavigationSubmitEvent>(OnSubmit);
-        m_inputField.value = "";
-
+        m_inputField.RegisterCallback<KeyDownEvent>(OnInputKeyDown);
         m_root.style.display = DisplayStyle.None;
-        m_isVisible = false;
     }
 
     private void OnEnable()
     {
         m_inputReader.OnToggleConsolePerformed += ToggleConsole;
     }
-
     private void OnDisable()
     {
         m_inputReader.OnToggleConsolePerformed -= ToggleConsole;
@@ -64,11 +66,6 @@ public class DeveloperConsole : MonoBehaviour
         {
             m_inputField.Focus();
             m_inputReader.EnableUIMode();
-
-            m_inputField.schedule.Execute(() => {
-                m_inputField.value = "";
-                m_inputField.Q(TextField.textInputUssName).Focus();
-            }).ExecuteLater(10); // Small delay
         }
         else
         {
@@ -81,49 +78,107 @@ public class DeveloperConsole : MonoBehaviour
         switch (evt.keyCode)
         {
             case KeyCode.Return:
-            case KeyCode.KeypadEnter:
                 ProcessCommand();
+                m_inputField.value = "";
                 evt.StopPropagation();
                 break;
 
-            case KeyCode.Escape:
-                ToggleConsole();
+            case KeyCode.UpArrow:
+                NavigateHistory(1);
+                evt.StopPropagation();
+                break;
+
+            case KeyCode.DownArrow:
+                NavigateHistory(-1);
                 evt.StopPropagation();
                 break;
         }
     }
 
-    private void OnSubmit(NavigationSubmitEvent evt)
+    private void NavigateHistory(int direction)
     {
-        ProcessCommand();
-        evt.StopPropagation();
+        if (m_commandHistory.Count == 0) return;
+
+        m_historyIndex = Mathf.Clamp(m_historyIndex + direction, 0, m_commandHistory.Count - 1);
+        m_inputField.value = m_commandHistory[m_commandHistory.Count - 1 - m_historyIndex];
     }
 
     private void ProcessCommand()
     {
-        if (string.IsNullOrWhiteSpace(m_inputField.value))
-            return;
+        if (string.IsNullOrWhiteSpace(m_inputField.value)) return;
 
-        AddLog(m_inputField.value);
-        m_inputField.value = "";
+        string input = m_inputField.value.Trim();
+        AddLog($"> {input}");
+        m_commandHistory.Add(input);
 
-        // Force focus back to the input field
-        m_inputField.schedule.Execute(() => {
-            m_inputField.Q(TextField.textInputUssName).Focus();
-        }).ExecuteLater(100);
+        string[] parts = input.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+        string command = parts[0].ToLower();
+        string[] args = parts.Length > 1 ? parts[1..] : Array.Empty<string>();
+
+        if (m_commands.TryGetValue(command, out var action))
+        {
+            try
+            {
+                action.Invoke(args);
+            }
+            catch (Exception e)
+            {
+                AddLog($"Erro: {e.Message}", Color.red);
+            }
+        }
+        else
+        {
+            AddLog($"Comando desconhecido. Digite 'help' para ajuda.", Color.yellow);
+        }
     }
 
-    public void AddLog(string message)
+    private void RegisterDefaultCommands()
     {
-        if (string.IsNullOrWhiteSpace(message)) return;
+        // Comando help
+        RegisterCommand("help", _ =>
+        {
+            AddLog("=== COMANDOS DISPONÍVEIS ===", Color.cyan);
+            foreach (var cmd in m_commandDescriptions)
+            {
+                AddLog($"{cmd.Key.PadRight(10)} - {cmd.Value}");
+            }
+        }, "Mostra esta lista de comandos");
 
-        Label logEntry = new Label(message);
+        // Comando noclip
+        RegisterCommand("noclip", _ =>
+        {
+            var player = GameObject.FindWithTag("Player");
+            if (!player || !player.TryGetComponent<PlayerStateMachine>(out var sm))
+            {
+                AddLog("Erro: Jogador não encontrado", Color.red);
+                return;
+            }
+
+            sm.ToggleNoclip();
+            AddLog($"Noclip {(sm.NoclipActive ? "ATIVADO" : "DESATIVADO")}",
+                 sm.NoclipActive ? Color.green : Color.red);
+
+            if (sm.NoclipActive)
+            {
+                AddLog("Controles:", Color.yellow);
+                AddLog("WASD: Movimento", Color.white);
+                AddLog("Espaço/Ctrl: Subir/Descer", Color.white);
+            }
+        }, "Ativa/desativa modo voo livre");
+    }
+
+    private void RegisterCommand(string command, Action<string[]> action, string description = "")
+    {
+        string key = command.ToLower();
+        m_commands[key] = action;
+        m_commandDescriptions[key] = description;
+    }
+
+    public void AddLog(string message, Color? color = null)
+    {
+        var logEntry = new Label(message);
+        logEntry.style.color = color ?? Color.white;
         m_scrollView.Add(logEntry);
-
-        // Auto-scroll
-        m_scrollView.scrollOffset = new Vector2(
-            0,
-            m_scrollView.contentContainer.layout.height + 100f
-        );
+        m_scrollView.scrollOffset = new Vector2(0, m_scrollView.contentContainer.layout.height);
     }
 }
