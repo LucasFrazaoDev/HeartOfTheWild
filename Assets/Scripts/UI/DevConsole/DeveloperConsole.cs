@@ -44,7 +44,7 @@ public class DeveloperConsole : MonoBehaviour
         m_inputField = m_root.Q<TextField>("inputField");
         m_scrollView = m_root.Q<ScrollView>("scrollView");
 
-        m_inputField.RegisterCallback<KeyDownEvent>(OnInputKeyDown);
+        m_inputField.RegisterCallback<KeyDownEvent>(OnInputKeyDown, TrickleDown.TrickleDown);
         m_root.style.display = DisplayStyle.None;
     }
 
@@ -55,6 +55,8 @@ public class DeveloperConsole : MonoBehaviour
     private void OnDisable()
     {
         m_inputReader.OnToggleConsolePerformed -= ToggleConsole;
+
+        m_inputField.UnregisterCallback<KeyDownEvent>(OnInputKeyDown);
     }
 
     private void ToggleConsole()
@@ -64,8 +66,15 @@ public class DeveloperConsole : MonoBehaviour
 
         if (m_isVisible)
         {
-            m_inputField.Focus();
+            // Solução definitiva para a aspa
+            m_inputField.SetValueWithoutNotify(""); // Limpa sem disparar eventos
             m_inputReader.EnableUIMode();
+
+            // Foco otimizado
+            m_inputField.schedule.Execute(() => {
+                m_inputField.Focus();
+                m_inputField.value = "";
+            }).ExecuteLater(10); // Delay maior para garantir
         }
         else
         {
@@ -78,9 +87,22 @@ public class DeveloperConsole : MonoBehaviour
         switch (evt.keyCode)
         {
             case KeyCode.Return:
-                ProcessCommand();
-                m_inputField.value = "";
-                evt.StopPropagation();
+            case KeyCode.KeypadEnter:
+                if (!string.IsNullOrWhiteSpace(m_inputField.value))
+                {
+                    // Bloqueia completamente qualquer outro evento
+                    evt.StopImmediatePropagation();
+
+                    // Processa o comando
+                    string command = m_inputField.value;
+                    m_inputField.value = "";
+
+                    // Agendamento para o próximo frame
+                    m_inputField.schedule.Execute(() => {
+                        ProcessCommand(command);
+                        m_inputField.Focus();
+                    }).StartingIn(10);
+                }
                 break;
 
             case KeyCode.UpArrow:
@@ -103,11 +125,9 @@ public class DeveloperConsole : MonoBehaviour
         m_inputField.value = m_commandHistory[m_commandHistory.Count - 1 - m_historyIndex];
     }
 
-    private void ProcessCommand()
+    private void ProcessCommand(string commandInput)
     {
-        if (string.IsNullOrWhiteSpace(m_inputField.value)) return;
-
-        string input = m_inputField.value.Trim();
+        string input = commandInput.Trim();
         AddLog($"> {input}");
         m_commandHistory.Add(input);
 
@@ -165,6 +185,11 @@ public class DeveloperConsole : MonoBehaviour
                 AddLog("Espaço/Ctrl: Subir/Descer", Color.white);
             }
         }, "Ativa/desativa modo voo livre");
+
+        RegisterCommand("clear", _ =>
+        {
+            m_scrollView.Clear();
+        }, "Limpa o console");
     }
 
     private void RegisterCommand(string command, Action<string[]> action, string description = "")
@@ -179,6 +204,19 @@ public class DeveloperConsole : MonoBehaviour
         var logEntry = new Label(message);
         logEntry.style.color = color ?? Color.white;
         m_scrollView.Add(logEntry);
-        m_scrollView.scrollOffset = new Vector2(0, m_scrollView.contentContainer.layout.height);
+
+        // Scroll automático garantido
+        m_scrollView.scrollOffset = new Vector2(
+            0,
+            m_scrollView.contentContainer.worldBound.height
+        );
+
+        // Força atualização do layout
+        m_scrollView.schedule.Execute(() => {
+            m_scrollView.scrollOffset = new Vector2(
+                0,
+                m_scrollView.contentContainer.worldBound.height
+            );
+        }).ExecuteLater(1);
     }
 }
