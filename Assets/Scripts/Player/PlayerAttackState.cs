@@ -6,12 +6,13 @@ public class PlayerAttackState : PlayerBaseState
 {
     private int m_currentComboStep;
     private float m_comboTimer;
-    private const float k_comboResetTime = 1.0f;
+    private const float k_comboResetTime = 0.5f; // Tempo menor para sair do combo
     private bool m_isAttacking;
+    private bool m_waitingForNextInput;
 
     public override void Enter()
     {
-        ResetState(); // Reutiliza o mesmo método de reset
+        ResetState();
         PerformAttack().Forget();
         m_stateMachine.GameInput.OnAttackPerformed += OnAttackPressed;
     }
@@ -19,39 +20,39 @@ public class PlayerAttackState : PlayerBaseState
     public override void Tick()
     {
         FaceMoveDirection();
-        m_comboTimer += Time.deltaTime;
 
-        if (m_comboTimer > k_comboResetTime)
+        // Só conta o tempo se não estiver atacando e estiver esperando próxima entrada
+        if (!m_isAttacking && m_waitingForNextInput)
         {
-            ResetCombo();
+            m_comboTimer += Time.deltaTime;
+            if (m_comboTimer > k_comboResetTime)
+            {
+                ResetCombo();
+            }
         }
     }
 
     public override void Exit()
     {
-        base.Exit(); // Importante para retornar ao pool
         m_stateMachine.GameInput.OnAttackPerformed -= OnAttackPressed;
-    }
-
-    public override void ResetState()
-    {
-        m_currentComboStep = 0;
-        m_comboTimer = 0f;
-        m_isAttacking = false;
     }
 
     private void OnAttackPressed()
     {
-        if (!m_isAttacking && m_currentComboStep < m_stateMachine.AttackCombo.Length - 1)
+        if (!m_isAttacking && m_waitingForNextInput)
         {
-            m_currentComboStep++;
-            PerformAttack().Forget();
+            if (m_currentComboStep < m_stateMachine.AttackCombo.Length - 1)
+            {
+                m_currentComboStep++;
+                PerformAttack().Forget();
+            }
         }
     }
 
     private async UniTaskVoid PerformAttack()
     {
         m_isAttacking = true;
+        m_waitingForNextInput = false;
         m_comboTimer = 0f;
 
         if (m_currentComboStep < m_stateMachine.AttackCombo.Length)
@@ -65,12 +66,17 @@ public class PlayerAttackState : PlayerBaseState
             Debug.Log($"Attack: {attack.attackName} Damage: {attack.damage}");
         }
 
-        await UniTask.Delay(TimeSpan.FromSeconds(0.25f), ignoreTimeScale: false);
+        // Pequena janela de bloqueio de input
+        await UniTask.Delay(TimeSpan.FromSeconds(0.1f), ignoreTimeScale: false);
+
+        // Libera para receber próximo input ou sair do combo
+        m_waitingForNextInput = true;
+        m_isAttacking = false;
     }
 
     private void OnAttackCompleted()
     {
-        m_isAttacking = false;
+        // Não faz nada aqui, o controle é feito no Tick()
     }
 
     private void ResetCombo()

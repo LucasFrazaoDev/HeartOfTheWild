@@ -205,13 +205,13 @@ public class DeveloperConsole : MonoBehaviour
         logEntry.style.color = color ?? Color.white;
         m_scrollView.Add(logEntry);
 
-        // Scroll automático garantido
+        // Automatic scroll
         m_scrollView.scrollOffset = new Vector2(
             0,
             m_scrollView.contentContainer.worldBound.height
         );
 
-        // Força atualização do layout
+        // Force update
         m_scrollView.schedule.Execute(() => {
             m_scrollView.scrollOffset = new Vector2(
                 0,

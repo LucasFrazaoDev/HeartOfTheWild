@@ -2,6 +2,7 @@ using UnityEngine;
 using Cysharp.Threading.Tasks;
 using System.Threading;
 using System;
+using System.Collections;
 
 [RequireComponent(typeof(Animator))]
 public class PlayerAnimator : MonoBehaviour
@@ -112,20 +113,22 @@ public class PlayerAnimator : MonoBehaviour
     {
         if (comboStep < 0 || comboStep >= stateMachine.AttackCombo.Length)
         {
-            Debug.LogWarning("Combo step inválido. Ajuste para um valor dentro do intervalo correto.");
+            Debug.LogWarning("Combo step inválido.");
+            onComplete?.Invoke(); // Importante para liberar o estado
             return;
         }
 
         string attackAnimationName = $"{k_attackAnimationPrefix}{comboStep}";
         Animator.CrossFadeInFixedTime(attackAnimationName, 0.1f);
 
-        WaitForAnimationCompletion(attackAnimationName, onComplete).Forget();
+        // Não espera a animação terminar completamente
+        // Apenas um pequeno delay para sincronização
+        StartCoroutine(DelayCallback(0.1f, onComplete));
     }
 
-    private async UniTask WaitForAnimationCompletion(string animationName, Action onComplete)
+    private IEnumerator DelayCallback(float delay, Action callback)
     {
-        float animationLength = Animator.GetCurrentAnimatorStateInfo(0).length;
-        await UniTask.Delay(TimeSpan.FromSeconds(animationLength));
-        onComplete?.Invoke();
+        yield return new WaitForSeconds(delay);
+        callback?.Invoke();
     }
 }
