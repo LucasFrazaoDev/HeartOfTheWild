@@ -28,6 +28,8 @@ public class PlayerAnimator : MonoBehaviour
     private int m_shieldDefenseLayer = 0;
 
     private CancellationTokenSource m_shieldWeightCancellationTokenSource;
+    private AnimationClip m_currentAttackClip;
+    private Coroutine m_attackCoroutine;
 
     public Animator Animator { get => m_animator; set => m_animator = value; }
 
@@ -109,26 +111,48 @@ public class PlayerAnimator : MonoBehaviour
         Animator.CrossFadeInFixedTime(k_fallAnimName, k_dampAirTime);
     }
 
-    public void PlayAttackAnimation(PlayerStateMachine stateMachine, int comboStep, Action onComplete)
+    public void PlayAttackAnimation(AnimationClip attackClip, Action onComplete)
     {
-        if (comboStep < 0 || comboStep >= stateMachine.AttackCombo.Length)
-        {
-            Debug.LogWarning("Combo step inválido.");
-            onComplete?.Invoke(); // Importante para liberar o estado
-            return;
-        }
+        if (m_attackCoroutine != null)
+            StopCoroutine(m_attackCoroutine);
 
-        string attackAnimationName = $"{k_attackAnimationPrefix}{comboStep}";
-        Animator.CrossFadeInFixedTime(attackAnimationName, 0.1f);
+        m_currentAttackClip = attackClip;
 
-        // Não espera a animação terminar completamente
-        // Apenas um pequeno delay para sincronização
-        StartCoroutine(DelayCallback(0.1f, onComplete));
+        // Usa o nome do clip diretamente
+        Animator.CrossFadeInFixedTime(attackClip.name, 0.05f);
+
+        m_attackCoroutine = StartCoroutine(TrackAttackAnimation(onComplete));
     }
 
-    private IEnumerator DelayCallback(float delay, Action callback)
+    private IEnumerator TrackAttackAnimation(Action onComplete)
     {
-        yield return new WaitForSeconds(delay);
-        callback?.Invoke();
+        // Espera animação começar
+        yield return new WaitUntil(() =>
+            Animator.GetCurrentAnimatorStateInfo(0).IsName(m_currentAttackClip.name));
+
+        float timeout = m_currentAttackClip.length * 2f; // Segurança
+        float elapsed = 0f;
+
+        while (Animator.GetCurrentAnimatorStateInfo(0).normalizedTime < 0.9f &&
+               elapsed < timeout)
+        {
+            if (!Animator.GetCurrentAnimatorStateInfo(0).IsName(m_currentAttackClip.name))
+                yield break;
+
+            elapsed += Time.deltaTime;
+            yield return null;
+        }
+
+        onComplete?.Invoke();
+    }
+
+    public void CancelAttackAnimation()
+    {
+        if (m_attackCoroutine != null)
+        {
+            StopCoroutine(m_attackCoroutine);
+            m_attackCoroutine = null;
+        }
+        Animator.CrossFade(m_moveBlendTreeHash, 0.1f);
     }
 }
