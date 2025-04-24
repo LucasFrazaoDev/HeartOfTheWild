@@ -12,6 +12,13 @@ public class PlayerMoveState : PlayerBaseState
 
     public override void Tick()
     {
+        // Verificar se o combo foi resetado (tempo entre ataques excedido)
+        if (m_stateMachine.CurrentComboIndex > 0 &&
+            Time.time - m_stateMachine.LastAttackTime > m_stateMachine.ComboResetTime)
+        {
+            m_stateMachine.SetCurrentComboIndex(0);
+        }
+
         if (!m_stateMachine.CharController.isGrounded)
         {
             m_stateMachine.SwitchToState<PlayerFallState>();

@@ -28,6 +28,18 @@ public class PlayerStateMachine : StateMachine
     [SerializeField] private InputReaderSO m_inputReader;
     [SerializeField] private AttackDataSO[] m_attackCombo;
 
+    [Header("Combat")]
+    [SerializeField] private WeaponType m_currentWeapon;
+    [SerializeField] private float m_comboResetTime = 1.5f;
+
+    private int m_currentComboIndex = 0;
+    private float m_lastAttackTime = 0;
+
+    public WeaponType CurrentWeapon => m_currentWeapon;
+    public int CurrentComboIndex => m_currentComboIndex;
+    public float ComboResetTime => m_comboResetTime;
+    public float LastAttackTime => m_lastAttackTime;
+
     public float MovementSpeed { get => m_movementSpeed; set => m_movementSpeed = value; }
     public float JumpForce { get => m_jumpForce; set => m_jumpForce = value; }
     public float LookRotationDampFactor { get => m_lookRotationDampFactor; set => m_lookRotationDampFactor = value; }
@@ -95,5 +107,14 @@ public class PlayerStateMachine : StateMachine
             m_charController.enabled = false;
             m_slopeSliding.enabled = false;
         }
+    }
+
+    public void SetCurrentComboIndex(int index)
+    {
+        m_currentComboIndex = index;
+    }
+    public void UpdateLastAttackTime()
+    {
+        m_lastAttackTime = Time.time;
     }
 }

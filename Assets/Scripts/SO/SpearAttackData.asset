@@ -10,8 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d94fdaa2d840362429927460c2b3748d, type: 3}
-  m_Name: Attack03
+  m_Name: SpearAttackData
   m_EditorClassIdentifier: 
-  attackName: Third
-  attackAnimation: {fileID: 7400000, guid: 936c9c59a6d4a6b49892620e71ba2baf, type: 2}
-  damage: 50
+  weaponType: 2
+  comboSequence: []

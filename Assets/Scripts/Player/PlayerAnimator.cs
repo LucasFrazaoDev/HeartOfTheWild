@@ -7,6 +7,7 @@ using System.Collections;
 [RequireComponent(typeof(Animator))]
 public class PlayerAnimator : MonoBehaviour
 {
+    [SerializeField] private PlayerStateMachine m_stateMachine;
     [SerializeField] private InputReaderSO m_inputReader;
     [SerializeField] private float m_transitionTime = 0.1f;
 
@@ -19,7 +20,16 @@ public class PlayerAnimator : MonoBehaviour
 
     private const string k_jumpAnimName = "JumpLaunch";
     private const string k_fallAnimName = "JumpMidAir";
-    private const string k_attackAnimationPrefix = "SwordAndShield_Attack0";
+
+    // Substitua as constantes de ataque existentes por:
+    private const string k_bowAttackPrefix = "Bow_Attack";
+    private const string k_swordAttackPrefix = "SwordAndShield_Attack";
+    private const string k_spearAttackPrefix = "SpearAndShield_Attack";
+
+    // Adicione estes hashes para os layers de armas
+    private readonly int m_bowLayer = Animator.StringToHash("BowLayer");
+    private readonly int m_swordLayer = Animator.StringToHash("SwordLayer");
+    private readonly int m_spearLayer = Animator.StringToHash("SpearLayer");
 
     private const float k_crossFadeMoveDuration = 0.2f;
     private const float k_dampAirTime = 0.1f;
@@ -111,39 +121,61 @@ public class PlayerAnimator : MonoBehaviour
         Animator.CrossFadeInFixedTime(k_fallAnimName, k_dampAirTime);
     }
 
-    public void PlayAttackAnimation(AnimationClip attackClip, Action onComplete)
+    public void PlayAttackAnimation(string animationTrigger)
     {
+        // Para todas as animações de ataque em andamento
         if (m_attackCoroutine != null)
+        {
             StopCoroutine(m_attackCoroutine);
+            m_attackCoroutine = null;
+        }
 
-        m_currentAttackClip = attackClip;
+        // Configura o layer de acordo com a arma atual
+        SetWeaponLayerWeight(m_stateMachine.CurrentWeapon, 1f);
 
-        // Usa o nome do clip diretamente
-        Animator.CrossFadeInFixedTime(attackClip.name, 0.05f);
+        // Executa a animação
+        Animator.SetTrigger(animationTrigger);
 
-        m_attackCoroutine = StartCoroutine(TrackAttackAnimation(onComplete));
+        // Rastreia a animação se necessário
+        m_attackCoroutine = StartCoroutine(TrackAttackAnimation());
     }
 
-    private IEnumerator TrackAttackAnimation(Action onComplete)
+    private IEnumerator TrackAttackAnimation()
     {
-        // Espera animação começar
-        yield return new WaitUntil(() =>
-            Animator.GetCurrentAnimatorStateInfo(0).IsName(m_currentAttackClip.name));
+        // Espera a animação terminar (implementação básica)
+        yield return new WaitForSeconds(0.1f); // Pequeno delay para o trigger ser capturado
 
-        float timeout = m_currentAttackClip.length * 2f; // Segurança
-        float elapsed = 0f;
-
-        while (Animator.GetCurrentAnimatorStateInfo(0).normalizedTime < 0.9f &&
-               elapsed < timeout)
+        while (Animator.GetCurrentAnimatorStateInfo(0).normalizedTime < 1f)
         {
-            if (!Animator.GetCurrentAnimatorStateInfo(0).IsName(m_currentAttackClip.name))
-                yield break;
-
-            elapsed += Time.deltaTime;
             yield return null;
         }
 
-        onComplete?.Invoke();
+        // Volta ao peso normal dos layers
+        ResetWeaponLayers();
+        m_attackCoroutine = null;
+    }
+
+    private void SetWeaponLayerWeight(WeaponType weapon, float weight)
+    {
+        switch (weapon)
+        {
+            case WeaponType.Bow:
+                Animator.SetLayerWeight(m_bowLayer, weight);
+                break;
+            case WeaponType.SwordAndShield:
+                Animator.SetLayerWeight(m_swordLayer, weight);
+                break;
+            case WeaponType.SpearAndShield:
+                Animator.SetLayerWeight(m_spearLayer, weight);
+                break;
+        }
+    }
+
+    private void ResetWeaponLayers()
+    {
+        Animator.SetLayerWeight(m_bowLayer, 0f);
+        Animator.SetLayerWeight(m_swordLayer, 0f);
+        Animator.SetLayerWeight(m_spearLayer, 0f);
     }
 
     public void CancelAttackAnimation()
@@ -153,6 +185,20 @@ public class PlayerAnimator : MonoBehaviour
             StopCoroutine(m_attackCoroutine);
             m_attackCoroutine = null;
         }
+
+        ResetWeaponLayers();
         Animator.CrossFade(m_moveBlendTreeHash, 0.1f);
+    }
+
+    public void SwitchWeapon(WeaponType newWeapon)
+    {
+        // Reseta todas as layers primeiro
+        ResetWeaponLayers();
+
+        // Configura a layer da nova arma
+        SetWeaponLayerWeight(newWeapon, 1f);
+
+        // Atualiza a animação de movimento para refletir a mudança
+        CrossFadeMoveAnimation();
     }
 }
