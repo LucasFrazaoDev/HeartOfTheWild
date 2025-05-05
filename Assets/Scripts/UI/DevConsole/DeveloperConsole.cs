@@ -56,7 +56,7 @@ public class DeveloperConsole : MonoBehaviour
     {
         m_inputReader.OnToggleConsolePerformed -= ToggleConsole;
 
-        m_inputField.UnregisterCallback<KeyDownEvent>(OnInputKeyDown);
+        //m_inputField.UnregisterCallback<KeyDownEvent>(OnInputKeyDown);
     }
 
     private void ToggleConsole()
