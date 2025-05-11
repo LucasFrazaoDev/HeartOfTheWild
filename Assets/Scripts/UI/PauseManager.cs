@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.Collections;
 using UnityEngine.UIElements;
 using UnityEngine.SceneManagement;
 
@@ -22,7 +23,9 @@ public class PauseManager : MonoBehaviour
     private const string k_pauseContainer = "pause-container";
     private const string k_resumeButton = "resume-button";
     private const string k_backMainMenuButton = "backMainMenu-button";
-    private const string k_blackOverlay = "blackOverlay";
+    private const string k_blackOverlay = "black-overlay";
+
+    private const float k_cutsceneDelay = 4.0f;
 
     private void Awake()
     {
@@ -87,8 +90,24 @@ public class PauseManager : MonoBehaviour
     }
 
     // BLACK OVERLAY FROM CUTSCENE
-    private void OnCutsceneFinished()
+    public void OnCutsceneFinished()
     {
+        if (m_blackOverlay == null)
+        {
+            var uiDocument = GetComponent<UIDocument>();
+            m_blackOverlay = uiDocument.rootVisualElement.Q<VisualElement>(k_blackOverlay);
+        }
+
+        // Adiciona classe da tela preta
         m_blackOverlay.AddToClassList("DisplayBlackOverlay");
+
+        StartCoroutine(RemoveOverlayAfterDelay(k_cutsceneDelay));
+    }
+
+    private IEnumerator RemoveOverlayAfterDelay(float delay)
+    {
+        yield return new WaitForSeconds(delay);
+
+        m_blackOverlay.RemoveFromClassList("DisplayBlackOverlay");
     }
 }

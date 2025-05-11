@@ -7,5 +7,5 @@
             <engine:Button text="Main menu" name="backMainMenu-button" style="width: 40%; font-size: 72px;" />
         </engine:VisualElement>
     </engine:VisualElement>
-    <engine:VisualElement name="BlackOverlay" class="DisplayBlackOverlay DefaultBlackOverlay" />
+    <engine:VisualElement name="black-overlay" class="DefaultBlackOverlay" style="display: flex;" />
 </engine:UXML>
