@@ -12,6 +12,8 @@ public class PauseManager : MonoBehaviour
     [SerializeField] private SceneDataSO m_sceneData;
 
     private VisualElement m_pauseContainer;
+
+    private VisualElement m_blackOverlay;
     private Button m_resumeButton;
     private Button m_backMainMenuButton;
 
@@ -20,6 +22,7 @@ public class PauseManager : MonoBehaviour
     private const string k_pauseContainer = "pause-container";
     private const string k_resumeButton = "resume-button";
     private const string k_backMainMenuButton = "backMainMenu-button";
+    private const string k_blackOverlay = "blackOverlay";
 
     private void Awake()
     {
@@ -45,6 +48,7 @@ public class PauseManager : MonoBehaviour
     private void InitializeUIElements(VisualElement root)
     {
         m_pauseContainer = root.Q<VisualElement>(k_pauseContainer);
+        m_blackOverlay = root.Q<VisualElement>(k_blackOverlay);
         m_resumeButton = root.Q<Button>(k_resumeButton);
         m_backMainMenuButton = root.Q<Button>(k_backMainMenuButton);
     }
@@ -80,5 +84,11 @@ public class PauseManager : MonoBehaviour
         Time.timeScale = 1f;
         m_sceneData.TargetSceneName = m_sceneData.mainMenuScene;
         SceneManager.LoadScene(m_sceneData.loadingScene);
+    }
+
+    // BLACK OVERLAY FROM CUTSCENE
+    private void OnCutsceneFinished()
+    {
+        m_blackOverlay.AddToClassList("DisplayBlackOverlay");
     }
 }

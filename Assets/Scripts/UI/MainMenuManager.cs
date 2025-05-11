@@ -47,13 +47,10 @@ public class MainMenuManager : MonoBehaviour
         m_exitButton.clicked -= OnExitButtonClicked;
     }
 
-    // PARA PROTOTITPO O GAME COMEÇA NA DUNGEON
-    // ALTERAR FUTURAMENTE PARA INICIAR NA FLORESTA
-
     private void OnStartButtonClicked()
     {
         m_input.EnableGameplayMode();
-        m_sceneData.TargetSceneName = m_sceneData.dungeonScene;
+        m_sceneData.TargetSceneName = m_sceneData.florestScene;
         SceneManager.LoadScene(m_sceneData.loadingScene);
     }
 

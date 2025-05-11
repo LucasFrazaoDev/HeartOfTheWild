@@ -1,4 +1,5 @@
 <engine:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:engine="UnityEngine.UIElements" xmlns:editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <Style src="project://database/Assets/UI%20Docs/Styles/PauseMenuStyle.uss?fileID=7433441132597879392&amp;guid=800339acd5595f74bb410f30b210a320&amp;type=3#PauseMenuStyle" />
     <engine:VisualElement name="pause-container" style="flex-grow: 1; width: auto; height: auto; align-self: auto; align-items: center; flex-direction: row; justify-content: center; display: none; visibility: visible;">
         <engine:VisualElement name="pauseMenuBackground-element" style="flex-grow: 0; width: 80%; height: 80%; background-color: rgba(0, 0, 0, 0.58); justify-content: space-evenly; flex-direction: column; align-items: center; align-content: flex-start; display: flex;">
             <engine:Label text="PAUSED" name="pause-label" style="font-size: 132px; color: rgb(255, 255, 255);" />
@@ -6,4 +7,5 @@
             <engine:Button text="Main menu" name="backMainMenu-button" style="width: 40%; font-size: 72px;" />
         </engine:VisualElement>
     </engine:VisualElement>
+    <engine:VisualElement name="BlackOverlay" class="DisplayBlackOverlay DefaultBlackOverlay" />
 </engine:UXML>
