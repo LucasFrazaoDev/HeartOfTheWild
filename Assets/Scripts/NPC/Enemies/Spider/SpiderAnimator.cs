@@ -10,26 +10,30 @@ public class SpiderAnimator : MonoBehaviour
     private float m_currentSpeed;
     private float m_speedSmoothVelocity;
 
-    private readonly int m_speedHash = Animator.StringToHash("Speed");
+    private const string k_attackParam = "SpiderAttack";
+
+    public Animator Animator => m_animator;
 
     private void Awake()
     {
         m_animator = GetComponent<Animator>();
     }
 
-    public void UpdateMovementSpeed(float rawSpeed)
+    public void UpdateMovementSpeed(float speed)
     {
-        // Convert raw speed to a value between 0 and 1
-        float normalizedSpeed = Mathf.Clamp01(rawSpeed);
-
-        // Smooth transition
+        // Blend tree movement speed
+        float normalizedSpeed = Mathf.Clamp01(speed);
         m_currentSpeed = Mathf.SmoothDamp(
             m_currentSpeed,
             normalizedSpeed,
             ref m_speedSmoothVelocity,
             m_speedSmoothTime
         );
+        m_animator.SetFloat("Speed", m_currentSpeed);
+    }
 
-        m_animator.SetFloat(m_speedHash, m_currentSpeed);
+    public void PlayAttackAnimation()
+    {
+        m_animator.SetTrigger(k_attackParam);
     }
 }

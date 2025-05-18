@@ -67,8 +67,7 @@ public class SpiderChaseState : SpiderBaseState
         }
         else if (distanceToPlayer <= m_attackRange)
         {
-            // TODO
-            // m_stateMachine.SwitchToState<SpiderAttackState>();
+            m_stateMachine.SwitchToState<SpiderAttackState>();
         }
     }
 }
