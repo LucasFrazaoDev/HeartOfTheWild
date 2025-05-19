@@ -3,7 +3,7 @@ using UnityEngine;
 public class SpiderAttackState : SpiderBaseState
 {
     [Header("Attack Settings")]
-    private float m_attackCooldown = 2f;
+    private float m_attackCooldown = 1f;
     private float m_attackRange = 2f;
     private float m_attackDamage = 10f;
     private float m_attackAnimationDuration = 1.2f;
@@ -57,17 +57,18 @@ public class SpiderAttackState : SpiderBaseState
     private void StartAttack()
     {
         m_isAttacking = true;
+        m_stateMachine.NavAgent.speed = 0f;
         m_attackTimer = 0f;
 
-        // Dispara animação de ataque (usando trigger)
         m_stateMachine.SpiderAnimator.PlayAttackAnimation();
 
-        ApplyDamage();
+        //ApplyDamage();
     }
 
     private void CompleteAttack()
     {
         m_isAttacking = false;
+        m_stateMachine.NavAgent.speed = m_stateMachine.WalkSpeed;
         m_attackTimer = 0f;
     }
 

@@ -470,6 +470,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 18d2f02305baef54fa237c55a935c621, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_stateMachine: {fileID: 0}
   m_inputReader: {fileID: 11400000, guid: 0d24d89b1a7993545940f050d12731af, type: 2}
   m_transitionTime: 0.07
 --- !u!82 &5911732692747076376
@@ -1026,6 +1027,7 @@ GameObject:
   - component: {fileID: 1728049183687563768}
   - component: {fileID: 4711878907591067925}
   - component: {fileID: 4989634920713219819}
+  - component: {fileID: 7514432254120991587}
   m_Layer: 0
   m_Name: MaleCharacter
   m_TagString: Player
@@ -1121,6 +1123,8 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 2c336122a02f86947970eb7d8ffba6d0, type: 2}
   - {fileID: 11400000, guid: b9c185f09cdbae544b5bb1da59eee5e6, type: 2}
   - {fileID: 11400000, guid: 0e4c66243b398024bbd8e06905f98973, type: 2}
+  m_currentWeapon: 0
+  m_comboResetTime: 1.5
 --- !u!114 &1728049183687563768
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1167,6 +1171,19 @@ MonoBehaviour:
   slideSpeed: 3
   slopeThreshold: 0.5
   raycastDistance: 1.5
+--- !u!114 &7514432254120991587
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4009214360954229765}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6eaa7ae407cb96e4193d983f42ae531b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _maxHealth: 200
 --- !u!1 &4037690551008671404
 GameObject:
   m_ObjectHideFlags: 0
@@ -2499,8 +2516,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6514964586735756760}
+  - component: {fileID: 1273178881039955178}
   m_Layer: 0
-  m_Name: weapon_r
+  m_Name: Weapon
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2522,6 +2540,29 @@ Transform:
   - {fileID: 2260313890847790356}
   m_Father: {fileID: 1156434564331294033}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!136 &1273178881039955178
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8157341763650113753}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 0
+  serializedVersion: 2
+  m_Radius: 0.17
+  m_Height: 1.51
+  m_Direction: 1
+  m_Center: {x: 0, y: 0.75, z: 0}
 --- !u!1 &8311814287606146515
 GameObject:
   m_ObjectHideFlags: 0

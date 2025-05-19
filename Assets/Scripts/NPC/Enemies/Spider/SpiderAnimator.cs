@@ -5,6 +5,7 @@ public class SpiderAnimator : MonoBehaviour
 {
     [Header("Animation Settings")]
     [SerializeField] private float m_speedSmoothTime = 0.1f;
+    [SerializeField] private GameObject m_claws;
 
     private Animator m_animator;
     private float m_currentSpeed;
@@ -17,6 +18,7 @@ public class SpiderAnimator : MonoBehaviour
     private void Awake()
     {
         m_animator = GetComponent<Animator>();
+        m_claws.SetActive(false);
     }
 
     public void UpdateMovementSpeed(float speed)
@@ -35,5 +37,21 @@ public class SpiderAnimator : MonoBehaviour
     public void PlayAttackAnimation()
     {
         m_animator.SetTrigger(k_attackParam);
+    }
+
+    public void EnableAttackHitbox()
+    {
+        if(m_claws != null)
+        {
+            m_claws.SetActive(true);
+        }
+    }
+
+    public void DisableAttackHitbox()
+    {
+        if(m_claws != null)
+        {
+            m_claws.SetActive(false);
+        }
     }
 }
