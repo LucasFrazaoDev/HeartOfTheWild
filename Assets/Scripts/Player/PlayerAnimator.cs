@@ -14,13 +14,13 @@ public class PlayerAnimator : MonoBehaviour
     [SerializeField] private float m_moveAnimSmoothTime = 0.1f;
     [SerializeField] private float m_attackTransitionTime = 0.05f;
 
-    // Animation Hashes
+    // Referencias das animações
     private readonly int m_speedXHash = Animator.StringToHash("SpeedX");
     private readonly int m_speedYHash = Animator.StringToHash("SpeedY");
     private readonly int m_moveBlendTreeHash = Animator.StringToHash("MoveBlendTree");
     private readonly int m_shieldDefenseHash = Animator.StringToHash("ShieldDefense");
 
-    // Animation Names
+    // Nome das animações
     private const string k_jumpAnim = "JumpLaunch";
     private const string k_fallAnim = "JumpMidAir";
     private const float k_airAnimTransition = 0.1f;
@@ -46,6 +46,7 @@ public class PlayerAnimator : MonoBehaviour
         m_animator.SetFloat(m_speedYHash, currentSpeedY);
     }
 
+    // Inicia a animação de ataque com base no nome do trigger
     public void PlayAttackAnimation(string triggerName)
     {
         // Cancela qualquer ataque anterior
@@ -62,6 +63,7 @@ public class PlayerAnimator : MonoBehaviour
         m_attackRoutine = StartCoroutine(TrackAttackAnimation(triggerName));
     }
 
+    // Inicia a animação de ataque com base no índice do ataque
     private IEnumerator TrackAttackAnimation(string triggerName)
     {
         // Espera a animação começar
@@ -79,6 +81,7 @@ public class PlayerAnimator : MonoBehaviour
         m_attackRoutine = null;
     }
 
+    // Reseta os triggers de ataque para evitar animações sobrepostas
     private void ResetAttackTriggers()
     {
         m_animator.ResetTrigger("Attack1");
@@ -86,15 +89,19 @@ public class PlayerAnimator : MonoBehaviour
         m_animator.ResetTrigger("Attack3");
     }
 
+    // Inicia a animação de movimento com transição suave
     public void CrossFadeMoveAnimation() =>
         m_animator.CrossFade(m_moveBlendTreeHash, 0.1f);
 
+    // Inicia a animação de pulo e queda
     public void PlayJumpAnimation() =>
         m_animator.CrossFade(k_jumpAnim, k_airAnimTransition);
 
+    // Inicia a animação de queda
     public void PlayFallAnimation() =>
         m_animator.CrossFade(k_fallAnim, k_airAnimTransition);
 
+    // Alterna a defesa com escudo, ativa ou desativa a animação
     public void ToggleShieldDefense(bool active) =>
         m_animator.SetBool(m_shieldDefenseHash, active);
 

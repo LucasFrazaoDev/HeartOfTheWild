@@ -21,9 +21,10 @@ public class SpiderAnimator : MonoBehaviour
         m_claws.SetActive(false);
     }
 
+    // Atualiza a velocidade de movimento do blend tree
     public void UpdateMovementSpeed(float speed)
     {
-        // Blend tree movement speed
+        // Normaliza a velocidade para o intervalo [0, 1]
         float normalizedSpeed = Mathf.Clamp01(speed);
         m_currentSpeed = Mathf.SmoothDamp(
             m_currentSpeed,
@@ -34,11 +35,13 @@ public class SpiderAnimator : MonoBehaviour
         m_animator.SetFloat("Speed", m_currentSpeed);
     }
 
+    // Executa a animação de ataque
     public void PlayAttackAnimation()
     {
         m_animator.SetTrigger(k_attackParam);
     }
 
+    // Ativa ou desativa o hitbox de ataque
     public void EnableAttackHitbox()
     {
         if(m_claws != null)
