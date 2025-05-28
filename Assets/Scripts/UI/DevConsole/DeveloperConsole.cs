@@ -18,7 +18,7 @@ public class DeveloperConsole : MonoBehaviour
     private ScrollView m_scrollView;
     private bool m_isVisible;
 
-    // Commands system
+    // Sistema de comandos
     private Dictionary<string, Action<string[]>> m_commands = new();
     private Dictionary<string, string> m_commandDescriptions = new();
     private List<string> m_commandHistory = new();
@@ -26,6 +26,7 @@ public class DeveloperConsole : MonoBehaviour
 
     private void Awake()
     {
+        // Verifica se já existe uma instância
         if (Instance != null && Instance != this)
         {
             Destroy(gameObject);
@@ -38,6 +39,7 @@ public class DeveloperConsole : MonoBehaviour
         RegisterDefaultCommands();
     }
 
+    // Inicializa os elementos da UI e registra callbacks
     private void InitializeUI()
     {
         m_root = m_devConsoleDoc.rootVisualElement;
@@ -55,10 +57,9 @@ public class DeveloperConsole : MonoBehaviour
     private void OnDisable()
     {
         m_inputReader.OnToggleConsolePerformed -= ToggleConsole;
-
-        //m_inputField.UnregisterCallback<KeyDownEvent>(OnInputKeyDown);
     }
 
+    // Alterna a visibilidade do console
     private void ToggleConsole()
     {
         m_isVisible = !m_isVisible;
@@ -66,15 +67,14 @@ public class DeveloperConsole : MonoBehaviour
 
         if (m_isVisible)
         {
-            // Solução definitiva para a aspa
-            m_inputField.SetValueWithoutNotify(""); // Limpa sem disparar eventos
+            m_inputField.SetValueWithoutNotify(""); // Limpa inputfield
             m_inputReader.EnableUIMode();
 
             // Foco otimizado
             m_inputField.schedule.Execute(() => {
                 m_inputField.Focus();
                 m_inputField.value = "";
-            }).ExecuteLater(10); // Delay maior para garantir
+            }).ExecuteLater(10);
         }
         else
         {
@@ -82,6 +82,7 @@ public class DeveloperConsole : MonoBehaviour
         }
     }
 
+    // Callback para eventos de tecla pressionada no campo de entrada
     private void OnInputKeyDown(KeyDownEvent evt)
     {
         switch (evt.keyCode)
@@ -105,6 +106,7 @@ public class DeveloperConsole : MonoBehaviour
                 }
                 break;
 
+            // Navegação no histórico de comandos
             case KeyCode.UpArrow:
                 NavigateHistory(1);
                 evt.StopPropagation();
@@ -117,6 +119,7 @@ public class DeveloperConsole : MonoBehaviour
         }
     }
 
+    // Navega pelo histórico de comandos
     private void NavigateHistory(int direction)
     {
         if (m_commandHistory.Count == 0) return;
@@ -125,6 +128,7 @@ public class DeveloperConsole : MonoBehaviour
         m_inputField.value = m_commandHistory[m_commandHistory.Count - 1 - m_historyIndex];
     }
 
+    // Processa o comando digitado pelo usuário
     private void ProcessCommand(string commandInput)
     {
         string input = commandInput.Trim();
@@ -152,6 +156,7 @@ public class DeveloperConsole : MonoBehaviour
         }
     }
 
+    // Registra os comandos padrão do console
     private void RegisterDefaultCommands()
     {
         // Comando help
@@ -192,6 +197,7 @@ public class DeveloperConsole : MonoBehaviour
         }, "Limpa o console");
     }
 
+    // Registra um comando personalizado
     private void RegisterCommand(string command, Action<string[]> action, string description = "")
     {
         string key = command.ToLower();
@@ -199,6 +205,7 @@ public class DeveloperConsole : MonoBehaviour
         m_commandDescriptions[key] = description;
     }
 
+    // Adiciona uma entrada de log ao console de desenvolvedor
     public void AddLog(string message, Color? color = null)
     {
         var logEntry = new Label(message);

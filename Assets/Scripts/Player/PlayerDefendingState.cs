@@ -9,7 +9,7 @@ public class PlayerDefendingState : PlayerBaseState
         m_stateMachine.Velocity.y = Physics.gravity.y;
 
         m_stateMachine.PlayerAnimator.CrossFadeMoveAnimation();
-        m_stateMachine.PlayerAnimator.ToggleShieldDefense(1.0f);
+        //m_stateMachine.PlayerAnimator.ToggleShieldDefense(1.0f);
 
         SubscribeInputEvents();
     }
@@ -34,7 +34,7 @@ public class PlayerDefendingState : PlayerBaseState
     {
         base.Exit();
         UnsubscribeInputEvents();
-        m_stateMachine.PlayerAnimator.ToggleShieldDefense(0f);
+        //m_stateMachine.PlayerAnimator.ToggleShieldDefense(0f);
     }
 
     private void SubscribeInputEvents()

@@ -7,7 +7,7 @@ public class InputReaderSO : ScriptableObject, PlayerInputController.IPlayerActi
                                                PlayerInputController.IUIActions,
                                                PlayerInputController.IDevConsoleActions
 {
-    // Gameplay Events
+    // Eventos de Ação do Jogador
     public event Action OnJumpPerformed;
     public event Action OnRunPerformed;
     public event Action OnAttackPerformed;
@@ -15,10 +15,10 @@ public class InputReaderSO : ScriptableObject, PlayerInputController.IPlayerActi
     public event Action OnShieldDefenseCanceled;
     public event Action OnPausePerformed;
 
-    // Dev Console Events
+    // Eventos de Console de Desenvolvimento
     public event Action OnToggleConsolePerformed;
 
-    // UI Events
+    // Eventos de UI
     public event Action<Vector2> OnNavigatePerformed;
     public event Action OnUISubmitPerformed;
     public event Action OnUICancelPerformed;
@@ -38,6 +38,7 @@ public class InputReaderSO : ScriptableObject, PlayerInputController.IPlayerActi
         CleanupPlayerInput();
     }
 
+    // Inicializa o PlayerInputController e configura os callbacks
     private void InitializePlayerInput()
     {
         if (m_playerInput == null)
@@ -53,6 +54,7 @@ public class InputReaderSO : ScriptableObject, PlayerInputController.IPlayerActi
         }
     }
 
+    // Limpa os callbacks e desabilita o PlayerInputController
     private void CleanupPlayerInput()
     {
         if (m_playerInput != null)
@@ -70,6 +72,7 @@ public class InputReaderSO : ScriptableObject, PlayerInputController.IPlayerActi
         }
     }
 
+    // Métodos para alternar entre modos de UI e Gameplay
     public void EnableUIMode()
     {
         m_playerInput.Player.Disable();
@@ -84,6 +87,7 @@ public class InputReaderSO : ScriptableObject, PlayerInputController.IPlayerActi
         m_isInUIMode = false;
     }
 
+    // Métodos de Ação do Jogador (Andar, correr, atacar, etc.)
     #region GameplayActions
     public Vector2 GetMovementVectorNormalized()
     {
@@ -124,7 +128,7 @@ public class InputReaderSO : ScriptableObject, PlayerInputController.IPlayerActi
     }
     #endregion
 
-    // UI Actions
+    // Métodos de navegação da UI
     #region UIActions
     public void OnNavigate(InputAction.CallbackContext context)
     {
@@ -150,7 +154,7 @@ public class InputReaderSO : ScriptableObject, PlayerInputController.IPlayerActi
             OnPausePerformed?.Invoke();
     }
 
-    // DevConsole
+    // Métodos de Console de Desenvolvimento
     public void OnToggleConsole(InputAction.CallbackContext context)
     {
         if (context.performed)

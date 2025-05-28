@@ -29,16 +29,17 @@ public class PlayerStateMachine : StateMachine
     [SerializeField] private AttackDataSO[] m_attackCombo;
 
     [Header("Combat")]
-    [SerializeField] private WeaponType m_currentWeapon;
+    [SerializeField] private SwordComboData m_swordCombo;
     [SerializeField] private float m_comboResetTime = 1.5f;
 
     private int m_currentComboIndex = 0;
     private float m_lastAttackTime = 0;
 
-    public WeaponType CurrentWeapon => m_currentWeapon;
+    // Remova a propriedade CurrentWeapon
     public int CurrentComboIndex => m_currentComboIndex;
     public float ComboResetTime => m_comboResetTime;
     public float LastAttackTime => m_lastAttackTime;
+    public SwordComboData SwordCombo => m_swordCombo;
 
     public float MovementSpeed { get => m_movementSpeed; set => m_movementSpeed = value; }
     public float JumpForce { get => m_jumpForce; set => m_jumpForce = value; }

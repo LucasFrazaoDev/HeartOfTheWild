@@ -9,11 +9,7 @@ public class PlayerAttackState : PlayerBaseState
 
     public override void Enter()
     {
-        m_stateEnterTime = Time.time;
-
-        // Obter dados do ataque atual
-        m_currentWeaponData = GetWeaponData(m_stateMachine.CurrentWeapon);
-        m_currentAttack = m_currentWeaponData.GetAttackData(m_stateMachine.CurrentComboIndex);
+        m_currentAttack = m_stateMachine.SwordCombo.GetAttackData(m_stateMachine.CurrentComboIndex);
 
         if (m_currentAttack == null)
         {
@@ -21,8 +17,7 @@ public class PlayerAttackState : PlayerBaseState
             return;
         }
 
-        // Configurar ataque
-        //m_stateMachine.PlayerAnimator.PlayAttackAnimation(m_currentAttack.animationTrigger);
+        m_stateMachine.PlayerAnimator.PlayAttackAnimation(m_currentAttack.animationTrigger);
         m_comboInputReceived = false;
 
         // Registrar input para próximo ataque
@@ -62,16 +57,6 @@ public class PlayerAttackState : PlayerBaseState
         {
             m_comboInputReceived = true;
         }
-    }
-
-    private AttackDataSO GetWeaponData(WeaponType weapon)
-    {
-        foreach (var data in m_stateMachine.AttackCombo)
-        {
-            if (data.weaponType == weapon)
-                return data;
-        }
-        return null;
     }
 
     private void ResetCombo()
