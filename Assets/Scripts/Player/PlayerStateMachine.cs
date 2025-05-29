@@ -6,6 +6,7 @@ using UnityEngine;
 [RequireComponent(typeof(CharacterController))]
 public class PlayerStateMachine : StateMachine
 {
+    // Referencias do PlayerStateMachine
     private CharacterController m_charController;
     private Transform m_mainCamera;
     private StatePool m_statePool;
@@ -15,6 +16,7 @@ public class PlayerStateMachine : StateMachine
 
     [HideInInspector] public Vector3 Velocity;
 
+    // Configurações do player
     [Header("Player status")]
     [SerializeField] private float m_movementSpeed = 3f;
     [SerializeField] private float m_jumpForce = 5f;
@@ -35,7 +37,6 @@ public class PlayerStateMachine : StateMachine
     private int m_currentComboIndex = 0;
     private float m_lastAttackTime = 0;
 
-    // Remova a propriedade CurrentWeapon
     public int CurrentComboIndex => m_currentComboIndex;
     public float ComboResetTime => m_comboResetTime;
     public float LastAttackTime => m_lastAttackTime;
@@ -55,6 +56,7 @@ public class PlayerStateMachine : StateMachine
     public float MaxFallSpeed { get => m_maxFallSpeed; set => m_maxFallSpeed = value; }
     public bool NoclipActive { get => m_noclipActive; set => m_noclipActive = value; }
 
+    // Referências de componentes
     private void Awake()
     {
         m_charController = GetComponent<CharacterController>();
@@ -62,6 +64,7 @@ public class PlayerStateMachine : StateMachine
         m_slopeSliding = GetComponent<SlopeSliding>();
     }
 
+    // Alternar para um novo estado
     public void SwitchToState<T>() where T : PlayerBaseState, new()
     {
         SwitchState(m_statePool.GetState<T>());
@@ -73,11 +76,13 @@ public class PlayerStateMachine : StateMachine
         SwitchState(m_statePool.GetState<PlayerMoveState>());
     }
 
+    // Alternar para um estado existente
     public void ReturnStateToPool(PlayerBaseState state)
     {
         m_statePool.ReturnState(state);
     }
 
+    // Alternar para o estado de noclip
     public void ToggleNoclip()
     {
         m_noclipActive = !m_noclipActive;
@@ -96,6 +101,7 @@ public class PlayerStateMachine : StateMachine
         }
     }
 
+    // Alternar colisões do personagem quando noclip é ativado/desativado
     private void ToggleColisions(bool collisionIsActive)
     {
         if (collisionIsActive)
@@ -110,6 +116,7 @@ public class PlayerStateMachine : StateMachine
         }
     }
 
+    // Métodos de gerenciamento de combo
     public void SetCurrentComboIndex(int index)
     {
         m_currentComboIndex = index;
